@@ -1017,9 +1017,19 @@ SvBuildMsrPermissionsMap (
     _Inout_ PVOID MsrPermissionsMap
     )
 {
+	// 		MSRPM Byte Offset					MSR Range 
+// 			000h每7FFh								0000_0000h每0000_1FFFh 
+// 			800h每FFFh								C000_0000h每C000_1FFFh 
+// 			1000h每17FFh							C001_0000h每C001_1FFFh 
+// 			1800h每1FFFh							Reserved
+
     static const UINT32 BITS_PER_MSR = 2;
+	static const UINT32 FIRST_MSR_RANGE_BASE = 0x00000000;
     static const UINT32 SECOND_MSR_RANGE_BASE = 0xc0000000;
+	static const UINT32 THIRD_MSR_RANGE_BASE = 0xC0010000;
+	static const UINT32 FIRST_MSRPM_OFFSET = 0x000 * CHAR_BIT;
     static const UINT32 SECOND_MSRPM_OFFSET = 0x800 * CHAR_BIT;
+	static const UINT32 THIRD_MSRPM_OFFSET = 0x1000 * CHAR_BIT;
     RTL_BITMAP bitmapHeader;
     ULONG offsetFrom2ndBase, offset;
 
@@ -1052,6 +1062,34 @@ SvBuildMsrPermissionsMap (
 	// intercept read and write
 	RtlSetBits(&bitmapHeader, offset, 1);
 	RtlSetBits(&bitmapHeader, offset + 1, 1);
+
+	// 			000h每7FFh								0000_0000h每0000_1FFFh 
+// 	for (ULONG i = 0; i <= 0x1FFF; i++)
+// 	{
+// 		offsetFrom2ndBase = (i - FIRST_MSR_RANGE_BASE) * BITS_PER_MSR;
+// 		offset = FIRST_MSRPM_OFFSET + offsetFrom2ndBase;
+// 		RtlSetBits(&bitmapHeader, offset, 1); // read
+// 		RtlSetBits(&bitmapHeader, offset + 1, 1); // write
+// 	}
+
+	// 			800h每FFFh								C000_0000h每C000_1FFFh 
+// 	for (ULONG i = 0xC0000000; i <= 0xC0001FFF; i++)
+// 	{
+// 		offsetFrom2ndBase = (i - SECOND_MSR_RANGE_BASE) * BITS_PER_MSR;
+// 		offset = SECOND_MSRPM_OFFSET + offsetFrom2ndBase;
+// 		RtlSetBits(&bitmapHeader, offset, 1); // read 
+// 		RtlSetBits(&bitmapHeader, offset + 1, 1); // write
+// 	}
+
+	// 			1000h每17FFh							C001_0000h每C001_1FFFh 
+// 	for (ULONG i = 0xC0010000; i<= 0xC0011FFF; i++)
+// 	{
+// 		offsetFrom2ndBase = (i - THIRD_MSR_RANGE_BASE) * BITS_PER_MSR;
+// 		offset = THIRD_MSRPM_OFFSET + offsetFrom2ndBase;
+// 		RtlSetBits(&bitmapHeader, offset, 1); // read 
+// 		RtlSetBits(&bitmapHeader, offset + 1, 1); // write
+// 	}
+
 }
 
 /*!
@@ -1289,6 +1327,7 @@ SvVirtualizeAllProcessors (
     // Build nested page table and MSRPM.
     //
     SvBuildNestedPageTables(sharedVpData);
+	RtlZeroMemory(sharedVpData->MsrPermissionsMap, SVM_MSR_PERMISSIONS_MAP_SIZE);
     SvBuildMsrPermissionsMap(sharedVpData->MsrPermissionsMap);
 
     //
