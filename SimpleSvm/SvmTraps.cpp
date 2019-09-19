@@ -67,16 +67,16 @@ VOID SvHandleLstrRead(
 
 	if (0 == VpData->GuestVmcb.ControlArea.ExitInfo1) // read
 	{
-		if (0 == VpData->HostStackLayout.OriginalMsrLstar)
-		{
-			MsrValue.QuadPart = VpData->GuestVmcb.StateSaveArea.LStar;
-		}
-		else
-		{
-			MsrValue.QuadPart = VpData->HostStackLayout.OriginalMsrLstar;
-		}
-		GuestContext->VpRegs->Rax = MsrValue.LowPart;
-		GuestContext->VpRegs->Rdx = MsrValue.HighPart;
+// 		if (0 == VpData->HostStackLayout.OriginalMsrLstar)
+// 		{
+ 			MsrValue.QuadPart = VpData->GuestVmcb.StateSaveArea.LStar;
+// 		}
+// 		else
+// 		{
+// 			MsrValue.QuadPart = VpData->HostStackLayout.OriginalMsrLstar;
+// 		}
+ 		GuestContext->VpRegs->Rax = MsrValue.LowPart;
+ 		GuestContext->VpRegs->Rdx = MsrValue.HighPart;
 	}
 	else // write
 	{
@@ -122,12 +122,12 @@ VOID SvHandleVmmcall(
 void VmmpHandleVmCallHookSyscall(
 	PVIRTUAL_PROCESSOR_DATA VpData, void * NewSysCallEntry)
 {
-	VpData->HostStackLayout.OriginalMsrLstar = UtilReadMsr64(Msr::kIa32Lstar); // read from host
-	VpData->GuestVmcb.StateSaveArea.LStar = (UINT64)NewSysCallEntry;
+// 	VpData->HostStackLayout.OriginalMsrLstar = UtilReadMsr64(Msr::kIa32Lstar); // read from host
+// 	VpData->GuestVmcb.StateSaveArea.LStar = (UINT64)NewSysCallEntry;
 }
 
 void VmmpHandleVmCallUnHookSyscall(PVIRTUAL_PROCESSOR_DATA VpData)
 {
-	VpData->GuestVmcb.StateSaveArea.LStar = VpData->HostStackLayout.OriginalMsrLstar;
-	VpData->HostStackLayout.OriginalMsrLstar = NULL;
+// 	VpData->GuestVmcb.StateSaveArea.LStar = VpData->HostStackLayout.OriginalMsrLstar;
+// 	VpData->HostStackLayout.OriginalMsrLstar = NULL;
 }

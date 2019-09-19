@@ -6,6 +6,7 @@
 #include <ntifs.h>
 #include <stdarg.h>
 #include "SvmHead.h"
+#include "vmm.h"
 
 #define POOL_NX_OPTIN   1
 
@@ -165,6 +166,8 @@ typedef struct _SHARED_VIRTUAL_PROCESSOR_DATA
 	DECLSPEC_ALIGN(PAGE_SIZE) PD_ENTRY_2MB PdeEntries[512][512];
 } SHARED_VIRTUAL_PROCESSOR_DATA, *PSHARED_VIRTUAL_PROCESSOR_DATA;
 
+
+
 typedef struct _VIRTUAL_PROCESSOR_DATA
 {
 	union
@@ -184,7 +187,8 @@ typedef struct _VIRTUAL_PROCESSOR_DATA
 			struct _VIRTUAL_PROCESSOR_DATA* Self;
 			PSHARED_VIRTUAL_PROCESSOR_DATA SharedVpData;
 			//UINT64 Padding1;        // To keep HostRsp 16 bytes aligned
-			UINT64 OriginalMsrLstar;
+			//UINT64 OriginalMsrLstar;
+			ProcessorNestData * pProcessNestData = NULL;
 			UINT64 Reserved1;
 		} HostStackLayout;
 	};

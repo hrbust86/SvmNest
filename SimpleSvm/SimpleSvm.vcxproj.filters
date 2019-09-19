@@ -54,6 +54,9 @@
     <ClInclude Include="HookSyscall\SvmHookMsr.h">
       <Filter>HookSyscall</Filter>
     </ClInclude>
+    <ClInclude Include="vmm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SimpleSvm.cpp">

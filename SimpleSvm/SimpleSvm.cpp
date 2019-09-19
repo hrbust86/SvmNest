@@ -661,7 +661,7 @@ SvPrepareForVirtualization (
     // Store data to stack so that the host (hypervisor) can use those values.
     //
     VpData->HostStackLayout.Reserved1 = MAXUINT64;
-	VpData->HostStackLayout.OriginalMsrLstar = 0;
+	//VpData->HostStackLayout.OriginalMsrLstar = 0;
     VpData->HostStackLayout.SharedVpData = SharedVpData;
     VpData->HostStackLayout.Self = VpData;
     VpData->HostStackLayout.HostVmcbPa = hostVmcbPa.QuadPart;

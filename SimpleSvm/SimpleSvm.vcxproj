@@ -77,6 +77,7 @@
     <ClInclude Include="SvmStruct.h" />
     <ClInclude Include="SvmTraps.h" />
     <ClInclude Include="SvmUtil.h" />
+    <ClInclude Include="vmm.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="HookSyscall\SvmHookMsr.cpp" />
