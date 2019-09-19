@@ -1327,7 +1327,6 @@ SvVirtualizeAllProcessors (
     // Build nested page table and MSRPM.
     //
     SvBuildNestedPageTables(sharedVpData);
-	RtlZeroMemory(sharedVpData->MsrPermissionsMap, SVM_MSR_PERMISSIONS_MAP_SIZE);
     SvBuildMsrPermissionsMap(sharedVpData->MsrPermissionsMap);
 
     //
