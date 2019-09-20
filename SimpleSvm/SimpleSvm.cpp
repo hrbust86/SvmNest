@@ -563,6 +563,12 @@ SvPrepareForVirtualization (
     pml4BasePa = MmGetPhysicalAddress(&SharedVpData->Pml4Entries);
     msrpmPa = MmGetPhysicalAddress(SharedVpData->MsrPermissionsMap);
 
+    VpData->HostStackLayout.pProcessNestData->vcpu_vmx = NULL;
+    VpData->HostStackLayout.pProcessNestData->CpuMode = ProtectedMode;
+    VpData->HostStackLayout.pProcessNestData->GuestMsrEFER.QuadPart = __readmsr((ULONGLONG)Msr::kIa32Efer);
+    VpData->HostStackLayout.pProcessNestData->GuestSvmHsave.QuadPart = 0;
+
+
     //
     // Configure to trigger #VMEXIT with CPUID and VMRUN instructions. CPUID is
     // intercepted to present existence of the SimpleSvm hypervisor and provide

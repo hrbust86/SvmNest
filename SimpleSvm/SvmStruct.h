@@ -322,4 +322,7 @@ enum class Msr : unsigned int {
 	kIa32GsBase = 0xC0000101,
 	kIa32KernelGsBase = 0xC0000102,
 	kIa32TscAux = 0xC0000103,
+
+    kIa32svmcr = 0xc0010114,
+    kIa32svmHsave = 0xc0010117,
 };
