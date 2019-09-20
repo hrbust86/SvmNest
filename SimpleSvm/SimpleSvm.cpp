@@ -739,7 +739,7 @@ SvVirtualizeProcessor (
     }
 
     vpData->HostStackLayout.pProcessNestData = reinterpret_cast<ProcessorNestData *>
-        (SvAllocatePageAlingedPhysicalMemory(sizeof(ProcessorNestData)));
+        (SvAllocatePageAlingedPhysicalMemory(PAGE_SIZE));
     
     if (nullptr == vpData->HostStackLayout.pProcessNestData)
     {
@@ -769,17 +769,17 @@ SvVirtualizeProcessor (
         SvDebugPrint("[SimpleSvm] Attempting to virtualize the processor.\n");
         sharedVpData = reinterpret_cast<PSHARED_VIRTUAL_PROCESSOR_DATA>(Context);
 
+	  //
+	  // Enable SVM by setting EFER.SVME. It has already been verified that this
+	  // bit was writable with SvIsSvmSupported.
+	  //
+		__writemsr(IA32_MSR_EFER, __readmsr(IA32_MSR_EFER) | EFER_SVME);
+
         //
         // Set up VMCB, the structure describes the guest state and what events
         // within the guest should be intercepted, ie, triggers #VMEXIT.
         //
         SvPrepareForVirtualization(vpData, sharedVpData, &contextRecord);
-
-        //
-       // Enable SVM by setting EFER.SVME. It has already been verified that this
-       // bit was writable with SvIsSvmSupported.
-       //
-        __writemsr(IA32_MSR_EFER, __readmsr(IA32_MSR_EFER) | EFER_SVME);
 
         //
         // Switch to the host RSP to run as the host (hypervisor), and then
