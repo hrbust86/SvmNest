@@ -256,7 +256,7 @@ typedef struct _GUEST_CONTEXT
 //
 // SimpleSVM specific constants.
 //
-#define CPUID_UNLOAD_SIMPLE_SVM     0x41414141
+#define CPUID_UNLOAD_SIMPLE_SVM     0x51515151
 #define CPUID_HV_MAX                CPUID_HV_INTERFACE
 
 /*!

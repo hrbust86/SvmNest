@@ -196,9 +196,9 @@ SvHandleCpuid (
         // ID signature as required by the spec.
         //
         registers[0] = CPUID_HV_MAX;
-        registers[1] = 'pmiS';  // "SimpleSvm   "
-        registers[2] = 'vSel';
-        registers[3] = '   m';
+        registers[1] = 'NmvS';  // "SvmNest     "
+        registers[2] = ' tse';
+        registers[3] = '    ';
         break;
     case CPUID_HV_INTERFACE:
         //
@@ -523,7 +523,7 @@ SvIsSimpleSvmHypervisorInstalled (
     RtlCopyMemory(vendorId + 8, &registers[3], sizeof(registers[3]));
     vendorId[12] = ANSI_NULL;
 
-    return (strcmp(vendorId, "SimpleSvm   ") == 0);
+    return (strcmp(vendorId, "SvmNest     ") == 0);
 }
 
 /*!
