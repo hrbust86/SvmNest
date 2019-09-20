@@ -732,6 +732,16 @@ SvVirtualizeProcessor (
         goto Exit;
     }
 
+    vpData->HostStackLayout.pProcessNestData = reinterpret_cast<ProcessorNestData *>
+        (SvAllocatePageAlingedPhysicalMemory(sizeof(ProcessorNestData)));
+    
+    if (nullptr == vpData->HostStackLayout.pProcessNestData)
+    {
+        SvDebugPrint("[SimpleSvm] error ProcessNestData");
+        status = STATUS_INSUFFICIENT_RESOURCES;
+        goto Exit;
+    }
+
     //
     // Capture the current RIP, RSP, RFLAGS, and segment selectors. This
     // captured state is used as an initial state of the guest mode; therefore
@@ -950,6 +960,12 @@ SvDevirtualizeProcessor (
     //
     sharedVpDataPtr = reinterpret_cast<PSHARED_VIRTUAL_PROCESSOR_DATA*>(Context);
     *sharedVpDataPtr = vpData->HostStackLayout.SharedVpData;
+    
+    if (vpData->HostStackLayout.pProcessNestData)
+    {
+        SvFreePageAlingedPhysicalMemory(vpData->HostStackLayout.pProcessNestData);
+        vpData->HostStackLayout.pProcessNestData = NULL;
+    }
     SvFreePageAlingedPhysicalMemory(vpData);
 
 Exit:
