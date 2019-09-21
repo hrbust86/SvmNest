@@ -210,13 +210,13 @@ SvLV20: ;
         ; Update RCX with the magic value indicating that the SimpleSvm
         ; hypervisor has been unloaded.
         ;
-        mov ecx, 'SSVM'
+        mov ecx, 'JSVM'
 
         ;
         ; Return to the next instruction of CPUID triggered this #VMEXIT. The
         ; registry values to be returned are:
         ;   EBX     = Undefined
-        ;   ECX     = 'SSVM'
+        ;   ECX     = 'JSVM'
         ;   EDX:EAX = An address of per processor data for this processor
         ;
         jmp rbx

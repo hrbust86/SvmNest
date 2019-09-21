@@ -942,11 +942,11 @@ SvDevirtualizeProcessor (
 
     //
     // Ask SimpleSVM hypervisor to deactivate itself. If the hypervisor is
-    // installed, this ECX is set to 'SSVM', and EDX:EAX indicates an address
+    // installed, this ECX is set to 'JSVM', and EDX:EAX indicates an address
     // of per processor data to be freed.
     //
     __cpuidex(registers, CPUID_UNLOAD_SIMPLE_SVM, CPUID_UNLOAD_SIMPLE_SVM);
-    if (registers[2] != 'SSVM')
+    if (registers[2] != 'JSVM')
     {
         goto Exit;
     }
