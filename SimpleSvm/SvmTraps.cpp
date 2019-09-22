@@ -126,6 +126,22 @@ VOID SvHandleEffer(
     VpData->GuestVmcb.StateSaveArea.Rip = VpData->GuestVmcb.ControlArea.NRip; // need npt
 }
 
+_IRQL_requires_same_
+VOID
+SvHandleVmrunEx(
+	_Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
+	_Inout_ PGUEST_CONTEXT GuestContext
+)
+{
+	//SV_DEBUG_BREAK();
+	NT_ASSERT(GuestContext->VpRegs->Rax != 0);
+
+	__svm_vmload(GuestContext->VpRegs->Rax);
+	__svm_vmrun(GuestContext->VpRegs->Rax);
+
+	VpData->GuestVmcb.StateSaveArea.Rip = VpData->GuestVmcb.ControlArea.NRip; // need npt
+}
+
 //Mnemonic Opcode Description
 //VMMCALL 0F 01 D9 Explicit communication with the VMM.
 VOID SvHandleVmmcall(

@@ -251,7 +251,7 @@ typedef struct _GUEST_CONTEXT
 //
 // The Microsoft Hypervisor interface defined constants.
 //
-#define CPUID_HV_VENDOR_AND_MAX_FUNCTIONS   0x40000000
+#define CPUID_HV_VENDOR_AND_MAX_FUNCTIONS   0x40000002
 #define CPUID_HV_INTERFACE                  0x40000001
 
 //

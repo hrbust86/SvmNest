@@ -46,6 +46,7 @@ SvInjectGeneralProtectionException(
 	_Inout_ PVIRTUAL_PROCESSOR_DATA VpData
 	)
 {
+	//SV_DEBUG_BREAK();
 	EVENTINJ event;
 
 	//

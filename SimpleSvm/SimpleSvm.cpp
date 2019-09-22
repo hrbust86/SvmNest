@@ -297,18 +297,18 @@ SvHandleMsrAccess (
     @param[inout]   VpData - Per processor data.
     @param[inout]   GuestRegisters - Guest's GPRs.
  */
-_IRQL_requires_same_
-static
-VOID
-SvHandleVmrun (
-    _Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
-    _Inout_ PGUEST_CONTEXT GuestContext
-    )
-{
-    UNREFERENCED_PARAMETER(GuestContext);
-
-    SvInjectGeneralProtectionException(VpData);
-}
+// _IRQL_requires_same_
+// static
+// VOID
+// SvHandleVmrun (
+//     _Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
+//     _Inout_ PGUEST_CONTEXT GuestContext
+//     )
+// {
+//     UNREFERENCED_PARAMETER(GuestContext);
+// 
+//     SvInjectGeneralProtectionException(VpData);
+// }
 
 /*!
     @brief          C-level entry point of the host code called from SvLaunchVm.
@@ -369,7 +369,8 @@ SvHandleVmExit (
         SvHandleMsrAccess(VpData, &guestContext);
         break;
     case VMEXIT_VMRUN:
-        SvHandleVmrun(VpData, &guestContext);
+        //SvHandleVmrun(VpData, &guestContext);
+		SvHandleVmrunEx(VpData, &guestContext);
         break;
 	case VMEXIT_VMMCALL: 
 		SvHandleVmmcall(VpData, &guestContext);
