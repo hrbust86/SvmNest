@@ -688,7 +688,7 @@ SvPrepareForVirtualization (
     // saves some of the current state on VMRUN and loads them on #VMEXIT. See
     // "VM_HSAVE_PA MSR (C001_0117h)".
     //
-    __writemsr(SVM_MSR_VM_HSAVE_PA, hostStateAreaPa.QuadPart);
+    __writemsr(IA32_MSR_VM_HSAVE, hostStateAreaPa.QuadPart);
 
     //
     // Also, save some of the current state to VMCB for the host. This is loaded
