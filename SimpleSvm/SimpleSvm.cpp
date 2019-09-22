@@ -279,6 +279,9 @@ SvHandleMsrAccess (
 	case IA32_MSR_LSTR:
 		SvHandleLstrRead(VpData, GuestContext);
 		break;
+    case IA32_MSR_VM_HSAVE:
+        SvHandleSvmHsave(VpData, GuestContext);
+        break;
 	default:
 		SvInjectGeneralProtectionException(VpData);
 		break;

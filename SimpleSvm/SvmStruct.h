@@ -233,6 +233,7 @@ typedef struct _GUEST_CONTEXT
 #define IA32_MSR_PAT    0x00000277
 #define IA32_MSR_EFER   0xc0000080
 #define IA32_MSR_LSTR   0xC0000082
+#define IA32_MSR_VM_HSAVE           0xc0010117
 
 #define EFER_SVME       (1UL << 12)
 

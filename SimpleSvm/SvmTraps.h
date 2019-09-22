@@ -18,4 +18,8 @@ VOID SvHandleLstrRead(
 	_Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
 	_Inout_ PGUEST_CONTEXT GuestContext);
 
+VOID SvHandleSvmHsave(
+    _Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
+    _Inout_ PGUEST_CONTEXT GuestContext);
+
 void VmmpHandleVmCallUnHookSyscall(PVIRTUAL_PROCESSOR_DATA VpData);
