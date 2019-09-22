@@ -106,6 +106,26 @@ VOID SvHandleSvmHsave(
     VpData->GuestVmcb.StateSaveArea.Rip = VpData->GuestVmcb.ControlArea.NRip; // need npt
 }
 
+VOID SvHandleEffer(
+    _Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
+    _Inout_ PGUEST_CONTEXT GuestContext)
+{
+    NT_ASSERT(GuestContext->VpRegs->Rcx == IA32_MSR_EFER);
+
+    if (0 == VpData->GuestVmcb.ControlArea.ExitInfo1) // read
+    {
+        GuestContext->VpRegs->Rax = VpData->HostStackLayout.pProcessNestData->GuestMsrEFER.LowPart;
+        GuestContext->VpRegs->Rdx = VpData->HostStackLayout.pProcessNestData->GuestMsrEFER.HighPart;
+    }
+    else
+    {
+        VpData->HostStackLayout.pProcessNestData->GuestMsrEFER.LowPart = GuestContext->VpRegs->Rax;
+        VpData->HostStackLayout.pProcessNestData->GuestMsrEFER.HighPart = GuestContext->VpRegs->Rdx;
+    }
+
+    VpData->GuestVmcb.StateSaveArea.Rip = VpData->GuestVmcb.ControlArea.NRip; // need npt
+}
+
 //Mnemonic Opcode Description
 //VMMCALL 0F 01 D9 Explicit communication with the VMM.
 VOID SvHandleVmmcall(

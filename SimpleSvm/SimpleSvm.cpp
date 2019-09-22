@@ -274,8 +274,9 @@ SvHandleMsrAccess (
 	switch (MsrNum)
 	{
 	case IA32_MSR_EFER:
-		SvHandleEFERWrite(VpData, GuestContext);
-		break;
+		//SvHandleEFERWrite(VpData, GuestContext);
+        SvHandleEffer(VpData, GuestContext);
+        break;
 	case IA32_MSR_LSTR:
 		SvHandleLstrRead(VpData, GuestContext);
 		break;
