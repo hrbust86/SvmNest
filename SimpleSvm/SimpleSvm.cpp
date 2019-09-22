@@ -625,6 +625,10 @@ SvPrepareForVirtualization (
 
     VpData->GuestVmcb.ControlArea.LbrVirtualizationEnable |= SVM_ENABLE_NEST_SVM;
 
+    // This feature allows STGI and CLGI to execute in Guest mode and control virtual interrupts in guest 
+    // mode while still allowing physical interrupts to be intercepted by the hypervisor. 
+    VpData->GuestVmcb.ControlArea.VIntr |= SVM_ENABLE_VIRTUAL_GIF;
+
     //
     // Set up the initial guest state based on the current system state. Those
     // values are loaded into the processor as guest state when the VMRUN

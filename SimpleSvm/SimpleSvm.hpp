@@ -38,6 +38,8 @@
 #define SVM_NP_ENABLE_NP_ENABLE         (1UL << 0)
 
 #define SVM_ENABLE_NEST_SVM (1UL << 1)
+#define SVM_ENABLE_VIRTUAL_GIF (1UL << 25)
+
 
 typedef struct _VMCB_CONTROL_AREA
 {
