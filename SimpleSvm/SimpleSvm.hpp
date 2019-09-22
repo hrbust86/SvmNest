@@ -37,6 +37,8 @@
 #define SVM_INTERCEPT_MISC2_VMMCALL  (1UL << 1)
 #define SVM_NP_ENABLE_NP_ENABLE         (1UL << 0)
 
+#define SVM_ENABLE_NEST_SVM (1UL << 1)
+
 typedef struct _VMCB_CONTROL_AREA
 {
     UINT16 InterceptCrRead;             // +0x000

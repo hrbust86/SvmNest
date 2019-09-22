@@ -619,6 +619,8 @@ SvPrepareForVirtualization (
     VpData->GuestVmcb.ControlArea.NpEnable |= SVM_NP_ENABLE_NP_ENABLE;
     VpData->GuestVmcb.ControlArea.NCr3 = pml4BasePa.QuadPart;
 
+    VpData->GuestVmcb.ControlArea.LbrVirtualizationEnable |= SVM_ENABLE_NEST_SVM;
+
     //
     // Set up the initial guest state based on the current system state. Those
     // values are loaded into the processor as guest state when the VMRUN
