@@ -1059,7 +1059,7 @@ SvBuildMsrPermissionsMap (
     static const UINT32 SECOND_MSRPM_OFFSET = 0x800 * CHAR_BIT;
 	static const UINT32 THIRD_MSRPM_OFFSET = 0x1000 * CHAR_BIT;
     RTL_BITMAP bitmapHeader;
-    ULONG offsetFrom2ndBase, offset;
+    ULONG offsetFromBase, offset;
 
     //
     // Setup and clear all bits, indicating no MSR access should be intercepted.
@@ -1075,8 +1075,8 @@ SvBuildMsrPermissionsMap (
     // IA32_MSR_EFER in bits. Then, add an offset until the second MSR
     // permissions map.
     //
-    offsetFrom2ndBase = (IA32_MSR_EFER - SECOND_MSR_RANGE_BASE) * BITS_PER_MSR;
-    offset = SECOND_MSRPM_OFFSET + offsetFrom2ndBase;
+    offsetFromBase = (IA32_MSR_EFER - SECOND_MSR_RANGE_BASE) * BITS_PER_MSR;
+    offset = SECOND_MSRPM_OFFSET + offsetFromBase;
 
     //
     // Set the MSB bit indicating write accesses to the MSR should be intercepted.
@@ -1084,12 +1084,24 @@ SvBuildMsrPermissionsMap (
     RtlSetBits(&bitmapHeader, offset + 1, 1);
 
 	// compute the offset IA32_MSR_LSTR 
-	offsetFrom2ndBase = (IA32_MSR_LSTR - SECOND_MSR_RANGE_BASE) * BITS_PER_MSR;
-	offset = SECOND_MSRPM_OFFSET + offsetFrom2ndBase;
+    offsetFromBase = (IA32_MSR_LSTR - SECOND_MSR_RANGE_BASE) * BITS_PER_MSR;
+	offset = SECOND_MSRPM_OFFSET + offsetFromBase;
 
 	// intercept read and write
 	RtlSetBits(&bitmapHeader, offset, 1);
 	RtlSetBits(&bitmapHeader, offset + 1, 1);
+
+    // compute the offset  kIa32svmHsave , for nest svm , because this reg would store some key data 
+    //The 64 - bit read / write VM_HSAVE_PA MSR holds the physical address of a 4KB block of memory
+    //where VMRUN saves host state, and from which #VMEXIT reloads host state.The VMM software is
+    //expected to set up this register before issuing the first VMRUN instruction.Software must not attempt
+    //to read or write the host save - state area directly.
+
+    offsetFromBase = ((UINT32)Msr::kIa32svmHsave - THIRD_MSR_RANGE_BASE) * BITS_PER_MSR;
+    offset = THIRD_MSRPM_OFFSET + offsetFromBase;
+
+    RtlSetBits(&bitmapHeader, offset, 1);
+    RtlSetBits(&bitmapHeader, offset + 1, 1);
 
 	// 			000h¨C7FFh								0000_0000h¨C0000_1FFFh 
 // 	for (ULONG i = 0; i <= 0x1FFF; i++)
