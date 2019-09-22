@@ -370,6 +370,9 @@ SvHandleVmExit (
 	case VMEXIT_VMMCALL: 
 		SvHandleVmmcall(VpData, &guestContext);
 		break;
+    case VMEXIT_NPF:
+        SV_DEBUG_BREAK();
+        break;
     default:
         SV_DEBUG_BREAK();
 #pragma prefast(disable : __WARNING_USE_OTHER_FUNCTION, "Unrecoverble path.")
@@ -612,8 +615,9 @@ SvPrepareForVirtualization (
     // the use of Nested Page Tables since all physical addresses from 0-512 GB
     // are configured to be accessible from the guest.
     //
-    //VpData->GuestVmcb.ControlArea.NpEnable |= SVM_NP_ENABLE_NP_ENABLE;
-    //VpData->GuestVmcb.ControlArea.NCr3 = pml4BasePa.QuadPart;
+
+    VpData->GuestVmcb.ControlArea.NpEnable |= SVM_NP_ENABLE_NP_ENABLE;
+    VpData->GuestVmcb.ControlArea.NCr3 = pml4BasePa.QuadPart;
 
     //
     // Set up the initial guest state based on the current system state. Those
