@@ -258,7 +258,7 @@ typedef struct _GUEST_CONTEXT
 // SimpleSVM specific constants.
 //
 #define CPUID_UNLOAD_SIMPLE_SVM     0x51515151
-#define CPUID_HV_MAX                CPUID_HV_INTERFACE
+#define CPUID_HV_MAX                0x40000002
 
 /*!
 @brief      Breaks into a kernel debugger when it is present.
