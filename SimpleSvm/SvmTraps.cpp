@@ -152,7 +152,7 @@ VOID SvHandleVmmcall(
 	{
 		auto HyperNum = (HypercallNumber)(GuestContext->VpRegs->Rcx);
 		unsigned __int64 context = (unsigned __int64)GuestContext->VpRegs->Rdx;
-		SV_DEBUG_BREAK();
+		//SV_DEBUG_BREAK();
 		switch (HyperNum)
 		{
 		case HypercallNumber::kTerminateVmm:
