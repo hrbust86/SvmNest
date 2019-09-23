@@ -246,7 +246,7 @@ SvHandleCpuid (
     //
     if (KeGetCurrentIrql() <= DISPATCH_LEVEL)
     {
-        SvDebugPrint("[SimpleSvm] CPUID: %08x-%08x : %08x %08x %08x %08x\n",
+        SvDebugPrint("[SvmNest] CPUID: %08x-%08x : %08x %08x %08x %08x\n",
                      leaf,
                      subLeaf,
                      registers[0],
@@ -748,7 +748,7 @@ SvVirtualizeProcessor (
 #pragma prefast(pop)
     if (vpData == nullptr)
     {
-        SvDebugPrint("[SimpleSvm] Insufficient memory.\n");
+        SvDebugPrint("[SvmNest] Insufficient memory.\n");
         status = STATUS_INSUFFICIENT_RESOURCES;
         goto Exit;
     }
@@ -758,7 +758,7 @@ SvVirtualizeProcessor (
     
     if (nullptr == vpData->HostStackLayout.pProcessNestData)
     {
-        SvDebugPrint("[SimpleSvm] error ProcessNestData");
+        SvDebugPrint("[SvmNest] error ProcessNestData");
         status = STATUS_INSUFFICIENT_RESOURCES;
         goto Exit;
     }
@@ -781,7 +781,7 @@ SvVirtualizeProcessor (
     //
     if (SvIsSimpleSvmHypervisorInstalled() == FALSE)
     {
-        SvDebugPrint("[SimpleSvm] Attempting to virtualize the processor.\n");
+        SvDebugPrint("[SvmNest] Attempting to virtualize the processor.\n");
         sharedVpData = reinterpret_cast<PSHARED_VIRTUAL_PROCESSOR_DATA>(Context);
 
 	  //
@@ -808,7 +808,7 @@ SvVirtualizeProcessor (
         KeBugCheck(MANUALLY_INITIATED_CRASH);
     }
 
-    SvDebugPrint("[SimpleSvm] The processor has been virtualized.\n");
+    SvDebugPrint("[SvmNest] The processor has been virtualized.\n");
     status = STATUS_SUCCESS;
 
 Exit:
@@ -966,7 +966,7 @@ SvDevirtualizeProcessor (
         goto Exit;
     }
 
-    SvDebugPrint("[SimpleSvm] The processor has been de-virtualized.\n");
+    SvDebugPrint("[SvmNest] The processor has been de-virtualized.\n");
 
     //
     // Get an address of per processor data indicated by EDX:EAX.
@@ -1339,7 +1339,7 @@ SvVirtualizeAllProcessors (
     //
     if (SvIsSvmSupported() == FALSE)
     {
-        SvDebugPrint("[SimpleSvm] SVM is not fully supported on this processor.\n");
+        SvDebugPrint("[SvmNest] SVM is not fully supported on this processor.\n");
         status = STATUS_HV_FEATURE_UNAVAILABLE;
         goto Exit;
     }
@@ -1355,7 +1355,7 @@ SvVirtualizeAllProcessors (
 #pragma prefast(pop)
     if (sharedVpData == nullptr)
     {
-        SvDebugPrint("[SimpleSvm] Insufficient memory.\n");
+        SvDebugPrint("[SvmNest] Insufficient memory.\n");
         status = STATUS_INSUFFICIENT_RESOURCES;
         goto Exit;
     }
@@ -1367,7 +1367,7 @@ SvVirtualizeAllProcessors (
                                                     SVM_MSR_PERMISSIONS_MAP_SIZE);
     if (sharedVpData->MsrPermissionsMap == nullptr)
     {
-        SvDebugPrint("[SimpleSvm] Insufficient memory.\n");
+        SvDebugPrint("[SvmNest] Insufficient memory.\n");
         status = STATUS_INSUFFICIENT_RESOURCES;
         goto Exit;
     }
@@ -1484,7 +1484,7 @@ DriverEntry (
     status = ExCreateCallback(&callbackObject, &objectAttributes, FALSE, TRUE);
     if (!NT_SUCCESS(status))
     {
-        SvDebugPrint("[SimpleSvm] Failed to open the power state callback object.\n");
+        SvDebugPrint("[SvmNest] Failed to open the power state callback object.\n");
         goto Exit;
     }
 
@@ -1498,7 +1498,7 @@ DriverEntry (
     ObDereferenceObject(callbackObject);
     if (callbackRegistration == nullptr)
     {
-        SvDebugPrint("[SimpleSvm] Failed to register a power state callback.\n");
+        SvDebugPrint("[SvmNest] Failed to register a power state callback.\n");
         status = STATUS_UNSUCCESSFUL;
         goto Exit;
     }
