@@ -136,8 +136,7 @@ SvHandleVmrunEx(
 	//SV_DEBUG_BREAK();
 	NT_ASSERT(GuestContext->VpRegs->Rax != 0);
 
-	__svm_vmload(GuestContext->VpRegs->Rax);
-	__svm_vmrun(GuestContext->VpRegs->Rax);
+	
 
 	VpData->GuestVmcb.StateSaveArea.Rip = VpData->GuestVmcb.ControlArea.NRip; // need npt
 }
