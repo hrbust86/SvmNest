@@ -47,6 +47,12 @@ struct SharedProcessorData {
 
 typedef struct _VCPU_VMX
 {
+    ULONG64  vmcb_guest_02_pa;
+    ULONG64  vmcb_host_02_pa;
+    ULONG64  hostStateAreaPa_02_pa;
+    ULONG64  vmcb_guest_12_pa;
+    ULONG64  vmcb_host_12_pa;
+    ULONG64  hostStateAreaPa_12_pa;
 	ULONG     InitialCpuNumber;				///VCPU number
 	BOOLEAN   blockINITsignal;			///NOT USED
 	BOOLEAN   blockAndDisableA20M;		///NOT USED

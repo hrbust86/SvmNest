@@ -575,7 +575,7 @@ SvPrepareForVirtualization (
     VpData->HostStackLayout.pProcessNestData->CpuMode = ProtectedMode;
     VpData->HostStackLayout.pProcessNestData->GuestMsrEFER.QuadPart = __readmsr((ULONGLONG)Msr::kIa32Efer);
     VpData->HostStackLayout.pProcessNestData->GuestSvmHsave.QuadPart = 0;
-
+    InterlockedIncrement(&VpData->HostStackLayout.pProcessNestData->shared_data->reference_count);
 
     //
     // Configure to trigger #VMEXIT with CPUID and VMRUN instructions. CPUID is

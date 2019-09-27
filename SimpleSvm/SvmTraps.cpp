@@ -136,7 +136,19 @@ SvHandleVmrunEx(
 	//SV_DEBUG_BREAK();
 	NT_ASSERT(GuestContext->VpRegs->Rax != 0);
 
-	
+    if (NULL == VpData->HostStackLayout.pProcessNestData->vcpu_vmx) // 没有开始嵌套
+    {
+        VCPUVMX *	 nested_vmx = NULL;
+        nested_vmx = (VCPUVMX*)ExAllocatePool(NonPagedPoolNx, sizeof(VCPUVMX));
+        nested_vmx->inRoot = RootMode;
+        nested_vmx->blockINITsignal = TRUE;
+        nested_vmx->blockAndDisableA20M = TRUE;
+
+    }
+	else // 嵌套环境已经建立
+    {
+    
+    }
 
 	VpData->GuestVmcb.StateSaveArea.Rip = VpData->GuestVmcb.ControlArea.NRip; // need npt
 }
