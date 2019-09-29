@@ -17,9 +17,15 @@ long g_RunningCnt = 0;
 
 VOID __stdcall HookPort64(uint pstack, uint param2, uint param3, uint param4)
 {
+    UNREFERENCED_PARAMETER(pstack);
+    UNREFERENCED_PARAMETER(param2);
+    UNREFERENCED_PARAMETER(param3);
+    UNREFERENCED_PARAMETER(param4);
 	uint SysNum = GetRax();
 	uint param1 = GetR10();
-	
+	UNREFERENCED_PARAMETER(SysNum);
+    UNREFERENCED_PARAMETER(param1);
+
 	if (KeGetCurrentIrql() > PASSIVE_LEVEL)
 	{
 		return;

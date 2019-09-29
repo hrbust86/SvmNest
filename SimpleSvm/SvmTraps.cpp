@@ -1,4 +1,6 @@
 #include "SvmTraps.h"
+#include "BaseUtil.h"
+#include "log/log.h"
 
 /*!
 @brief          Handles #VMEXIT due to execution of the WRMSR and RDMSR
@@ -94,13 +96,13 @@ VOID SvHandleSvmHsave(
 
     if (0 == VpData->GuestVmcb.ControlArea.ExitInfo1) // read
     {
-        GuestContext->VpRegs->Rax = VpData->HostStackLayout.pProcessNestData->GuestSvmHsave.LowPart;
-        GuestContext->VpRegs->Rdx = VpData->HostStackLayout.pProcessNestData->GuestSvmHsave.HighPart;
+        GuestContext->VpRegs->Rax = VpData->HostStackLayout.pProcessNestData->GuestSvmHsave12.LowPart;
+        GuestContext->VpRegs->Rdx = VpData->HostStackLayout.pProcessNestData->GuestSvmHsave12.HighPart;
     }
     else // write
     {
-        VpData->HostStackLayout.pProcessNestData->GuestSvmHsave.LowPart = GuestContext->VpRegs->Rax;
-        VpData->HostStackLayout.pProcessNestData->GuestSvmHsave.HighPart = GuestContext->VpRegs->Rdx;
+        VpData->HostStackLayout.pProcessNestData->GuestSvmHsave12.LowPart = (ULONG)GuestContext->VpRegs->Rax;
+        VpData->HostStackLayout.pProcessNestData->GuestSvmHsave12.HighPart = (ULONG)GuestContext->VpRegs->Rdx;
     }
 
     VpData->GuestVmcb.StateSaveArea.Rip = VpData->GuestVmcb.ControlArea.NRip; // need npt
@@ -119,8 +121,8 @@ VOID SvHandleEffer(
     }
     else
     {
-        VpData->HostStackLayout.pProcessNestData->GuestMsrEFER.LowPart = GuestContext->VpRegs->Rax;
-        VpData->HostStackLayout.pProcessNestData->GuestMsrEFER.HighPart = GuestContext->VpRegs->Rdx;
+        VpData->HostStackLayout.pProcessNestData->GuestMsrEFER.LowPart = (ULONG)GuestContext->VpRegs->Rax;
+        VpData->HostStackLayout.pProcessNestData->GuestMsrEFER.HighPart = (ULONG)GuestContext->VpRegs->Rdx;
     }
 
     VpData->GuestVmcb.StateSaveArea.Rip = VpData->GuestVmcb.ControlArea.NRip; // need npt
@@ -136,13 +138,28 @@ SvHandleVmrunEx(
 	//SV_DEBUG_BREAK();
 	NT_ASSERT(GuestContext->VpRegs->Rax != 0);
 
-    if (NULL == VpData->HostStackLayout.pProcessNestData->vcpu_vmx) // 没有开始嵌套
+    if (NULL == VpData->HostStackLayout.pProcessNestData->vcpu_vmx && 
+        CPU_MODE::VmxMode != VpData->HostStackLayout.pProcessNestData->CpuMode) // 没有开始嵌套
     {
         VCPUVMX *	 nested_vmx = NULL;
+        PROCESSOR_NUMBER      number = { 0 };
         nested_vmx = (VCPUVMX*)ExAllocatePool(NonPagedPoolNx, sizeof(VCPUVMX));
-        nested_vmx->inRoot = RootMode;
+        memset(nested_vmx, 0, sizeof(VCPUVMX));
+        nested_vmx->inRoot = VMX_MODE::RootMode;
         nested_vmx->blockINITsignal = TRUE;
         nested_vmx->blockAndDisableA20M = TRUE;
+        nested_vmx->InitialCpuNumber = KeGetCurrentProcessorNumberEx(&number);
+
+        // vcpu etner vmx-root mode now
+        SetvCpuMode(VpData, CPU_MODE::VmxMode);
+        VpData->HostStackLayout.pProcessNestData->vcpu_vmx = nested_vmx;
+
+        HYPERPLATFORM_LOG_DEBUG("VMXON: Run Successfully with  Total Vitrualized Core: %x  Current Cpu: %x in Cpu Group : %x  Number: %x \r\n",
+             nested_vmx->InitialCpuNumber, number.Group, number.Number);
+        
+        // Load VMCS02 into physical cpu , And perform some check on VMCS12
+
+
 
     }
 	else // 嵌套环境已经建立
@@ -189,12 +206,15 @@ VOID SvHandleVmmcall(
 void VmmpHandleVmCallHookSyscall(
 	PVIRTUAL_PROCESSOR_DATA VpData, void * NewSysCallEntry)
 {
+    UNREFERENCED_PARAMETER(VpData);
+    UNREFERENCED_PARAMETER(NewSysCallEntry);
 // 	VpData->HostStackLayout.OriginalMsrLstar = UtilReadMsr64(Msr::kIa32Lstar); // read from host
 // 	VpData->GuestVmcb.StateSaveArea.LStar = (UINT64)NewSysCallEntry;
 }
 
 void VmmpHandleVmCallUnHookSyscall(PVIRTUAL_PROCESSOR_DATA VpData)
 {
+    UNREFERENCED_PARAMETER(VpData);
 // 	VpData->GuestVmcb.StateSaveArea.LStar = VpData->HostStackLayout.OriginalMsrLstar;
 // 	VpData->HostStackLayout.OriginalMsrLstar = NULL;
 }

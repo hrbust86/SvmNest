@@ -72,6 +72,7 @@
     <MASM Include="x64.asm" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BaseUtil.h" />
     <ClInclude Include="HookSyscall\SvmHookMsr.h" />
     <ClInclude Include="SvmHead.h" />
     <ClInclude Include="log\log.h" />
@@ -82,6 +83,7 @@
     <ClInclude Include="vmm.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BaseUtil.cpp" />
     <ClCompile Include="HookSyscall\SvmHookMsr.cpp" />
     <ClCompile Include="log\log.cpp" />
     <ClCompile Include="SimpleSvm.cpp" />

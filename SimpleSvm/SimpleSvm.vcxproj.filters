@@ -57,6 +57,9 @@
     <ClInclude Include="vmm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="BaseUtil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SimpleSvm.cpp">
@@ -73,6 +76,9 @@
     </ClCompile>
     <ClCompile Include="HookSyscall\SvmHookMsr.cpp">
       <Filter>HookSyscall</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseUtil.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
