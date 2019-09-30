@@ -157,7 +157,19 @@ SvHandleVmrunEx(
         HYPERPLATFORM_LOG_DEBUG("VMXON: Run Successfully with  Total Vitrualized Core: %x  Current Cpu: %x in Cpu Group : %x  Number: %x \r\n",
              nested_vmx->InitialCpuNumber, number.Group, number.Number);
         
-        // Load VMCS02 into physical cpu , And perform some check on VMCS12
+        // Load VMCB02 into physical cpu , And perform some check on VMCB12
+        PVOID pVmcb02VaGuest = ExAllocatePool(NonPagedPoolNx, PAGE_SIZE);
+        PVOID pVmcb02VaHost = ExAllocatePool(NonPagedPoolNx, PAGE_SIZE);
+        RtlZeroMemory(pVmcb02VaGuest, PAGE_SIZE);
+        RtlZeroMemory(pVmcb02VaHost, PAGE_SIZE);
+        
+        VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_guest_02_pa = UtilPaFromVa(pVmcb02VaGuest);
+        VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_host_02_pa = UtilPaFromVa(pVmcb02VaHost);
+
+        nested_vmx->kVirtualProcessorId = (USHORT)KeGetCurrentProcessorNumberEx(nullptr) + 1;
+
+        HYPERPLATFORM_LOG_DEBUG_SAFE("[VMPTRLD] Run Successfully \r\n");
+        HYPERPLATFORM_LOG_DEBUG_SAFE("[VMPTRLD] Current Cpu: %x in Cpu Group : %x  Number: %x \r\n", nested_vmx->InitialCpuNumber, number.Group, number.Number);
 
 
 
