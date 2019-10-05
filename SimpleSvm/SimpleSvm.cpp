@@ -344,7 +344,15 @@ SvHandleVmExit (
     //
     // Load some host state that are not loaded on #VMEXIT.
     //
-    __svm_vmload(VpData->HostStackLayout.HostVmcbPa);
+	if (CPU_MODE::VmxMode != VpData->HostStackLayout.pProcessNestData->CpuMode && 
+		NULL == VpData->HostStackLayout.pProcessNestData->vcpu_vmx)
+	{
+		__svm_vmload(VpData->HostStackLayout.HostVmcbPa);
+	}
+	else
+	{
+		__svm_vmload(VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_host_02_pa); // in the nest , we need use
+	}
 
     NT_ASSERT(VpData->HostStackLayout.Reserved1 == MAXUINT64);
 
@@ -575,7 +583,7 @@ SvPrepareForVirtualization (
     VpData->HostStackLayout.pProcessNestData->CpuMode = ProtectedMode;
     VpData->HostStackLayout.pProcessNestData->GuestMsrEFER.QuadPart = __readmsr((ULONGLONG)Msr::kIa32Efer);
     VpData->HostStackLayout.pProcessNestData->GuestSvmHsave12.QuadPart = 0;
-    InterlockedIncrement(&VpData->HostStackLayout.pProcessNestData->shared_data->reference_count);
+    //InterlockedIncrement(&VpData->HostStackLayout.pProcessNestData->shared_data->reference_count);
 
     //
     // Configure to trigger #VMEXIT with CPUID and VMRUN instructions. CPUID is
