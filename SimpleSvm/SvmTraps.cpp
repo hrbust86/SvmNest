@@ -135,7 +135,7 @@ SvHandleVmrunEx(
 	_Inout_ PGUEST_CONTEXT GuestContext
 )
 {
-	SV_DEBUG_BREAK();
+	//SV_DEBUG_BREAK();
 	NT_ASSERT(GuestContext->VpRegs->Rax != 0);
 
     if (NULL == VpData->HostStackLayout.pProcessNestData->vcpu_vmx && 
@@ -225,6 +225,7 @@ SvHandleVmrunEx(
 		pVmcbGuest02va->StateSaveArea.EsAttrib = pVmcbGuest12va->StateSaveArea.EsAttrib;
 		pVmcbGuest02va->StateSaveArea.SsAttrib = pVmcbGuest12va->StateSaveArea.SsAttrib;
 
+		SV_DEBUG_BREAK();
 		pVmcbGuest02va->StateSaveArea.Efer = __readmsr(IA32_MSR_EFER);
 		pVmcbGuest02va->StateSaveArea.Cr0 = __readcr0();
 		pVmcbGuest02va->StateSaveArea.Cr2 = __readcr2();
@@ -239,14 +240,19 @@ SvHandleVmrunEx(
 		__svm_vmsave(VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_guest_02_pa);
 		__writemsr(SVM_MSR_VM_HSAVE_PA, VpData->HostStackLayout.pProcessNestData->GuestSvmHsave12.QuadPart); // prevent to destroy the 01 HostStateArea
 		//__svm_vmrun(VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_guest_02_pa);
+		VpData->HostStackLayout.pProcessNestData->vcpu_vmx->pVpdata = VpData;
+		
 		SvLaunchVm(&(VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_guest_02_pa));
     }
 	else // 嵌套环境已经建立
     {
-		SvInjectGeneralProtectionException(VpData);
+		SV_DEBUG_BREAK();
+		//SvInjectGeneralProtectionException(VpData);
+// 		PVMCB pVmcbGuest12va = (PVMCB)UtilVaFromPa(VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_guest_12_pa);
+// 		VpData->GuestVmcb.StateSaveArea.Rip = pVmcbGuest12va->StateSaveArea.Rip;
     }
 
-	//VpData->GuestVmcb.StateSaveArea.Rip = VpData->GuestVmcb.ControlArea.NRip; // need npt
+	VpData->GuestVmcb.StateSaveArea.Rip = VpData->GuestVmcb.ControlArea.NRip; // need npt
 }
 
 //Mnemonic Opcode Description
