@@ -47,6 +47,7 @@ struct SharedProcessorData {
 
 typedef struct _VCPU_VMX
 {
+    UINT8 StackContents02[KERNEL_STACK_SIZE];
     ULONG64  vmcb_guest_02_pa;
     ULONG64  vmcb_host_02_pa;
 	struct _VIRTUAL_PROCESSOR_DATA* pVpdata; // very important just like _VIRTUAL_PROCESSOR_DATA
