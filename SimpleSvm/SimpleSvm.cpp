@@ -217,7 +217,7 @@ SvHandleCpuid (
             attribute.AsUInt16 = VpData->GuestVmcb.StateSaveArea.SsAttrib;
             if (attribute.Fields.Dpl == DPL_SYSTEM)
             {
-                GuestContext->ExitVm = TRUE;
+                GuestContext->ExitVm = EXIT_REASON::EXIT_EXIT;
             }
             break;
         }
@@ -332,7 +332,7 @@ SvHandleMsrAccess (
  */
 _IRQL_requires_same_
 EXTERN_C
-BOOLEAN
+long
 NTAPI
 SvHandleVmExit (
     _Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
@@ -363,7 +363,7 @@ SvHandleVmExit (
     GuestRegisters->Rax = VpData->GuestVmcb.StateSaveArea.Rax;
 
     guestContext.VpRegs = GuestRegisters;
-    guestContext.ExitVm = FALSE;
+    guestContext.ExitVm = EXIT_REASON::EXIT_NOTHING;
 
     //
     // Handle #VMEXIT according with its reason.
@@ -395,7 +395,7 @@ SvHandleVmExit (
     //
     // Terminate the SimpleSvm hypervisor if requested.
     //
-    if (guestContext.ExitVm != FALSE)
+    if (EXIT_REASON::EXIT_EXIT == guestContext.ExitVm)
     {
         NT_ASSERT(VpData->GuestVmcb.ControlArea.ExitCode == VMEXIT_CPUID);
 

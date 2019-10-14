@@ -184,14 +184,15 @@ SvLV10: ;
         ; Test a return value of SvHandleVmExit (RAX), then POPAQ to restore the
         ; original guest's GPRs.
         ;
-        test al, al
+        ;test al, al
+		cmp al , 1
         POPAQ
 
         ;
         ; If non zero value is returned from SvHandleVmExit, this function exits
         ; the loop. Otherwise, continue the loop and resume the guest.
         ;
-        jnz SvLV20      ; if (ExitVm != 0) jmp SvLV20
+        jz SvLV20      ; if (ExitVm == 1) jmp SvLV20
         jmp SvLV10      ; else jmp SvLV10
 
 SvLV20: ;
