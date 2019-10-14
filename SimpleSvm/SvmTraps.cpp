@@ -54,8 +54,8 @@ VOID SvHandleEFERWrite(
 	//
 	// Then, advance RIP to "complete" the instruction.
 	//
-	//VpData->GuestVmcb.StateSaveArea.Rip = VpData->GuestVmcb.ControlArea.NRip;
-	VpData->GuestVmcb.StateSaveArea.Rip += 2;
+	VpData->GuestVmcb.StateSaveArea.Rip = VpData->GuestVmcb.ControlArea.NRip;
+	//VpData->GuestVmcb.StateSaveArea.Rip += 2;
 }
 
 VOID SvHandleLstrRead(
