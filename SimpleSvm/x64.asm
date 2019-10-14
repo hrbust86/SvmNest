@@ -180,6 +180,12 @@ SvLV10: ;
         movaps xmm0, xmmword ptr [rsp + 20h]
         add rsp, 80h
 
+		; check svm nest and set new vmcb
+		cmp al, 2 ; EXIT_REASON::EXIT_NEST_SET_NEW_VMCB;
+		jnz SvLV30 ;  if (ExitVm != 2) jmp SvLV30
+		mov rsp, [rsp + 8 * 13] ; rbx => rsp
+
+SvLV30:
         ;
         ; Test a return value of SvHandleVmExit (RAX), then POPAQ to restore the
         ; original guest's GPRs.
