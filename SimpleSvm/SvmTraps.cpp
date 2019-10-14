@@ -254,7 +254,7 @@ SvHandleVmrunEx(
 // 		VpData->GuestVmcb.StateSaveArea.Rip = pVmcbGuest12va->StateSaveArea.Rip;
     }
 
-	VpData->GuestVmcb.StateSaveArea.Rip = VpData->GuestVmcb.ControlArea.NRip; // need npt
+	//VpData->GuestVmcb.StateSaveArea.Rip = VpData->GuestVmcb.ControlArea.NRip; // need npt
 }
 
 //Mnemonic Opcode Description
