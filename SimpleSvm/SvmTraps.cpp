@@ -305,3 +305,50 @@ void VmmpHandleVmCallUnHookSyscall(PVIRTUAL_PROCESSOR_DATA VpData)
 // 	VpData->GuestVmcb.StateSaveArea.LStar = VpData->HostStackLayout.OriginalMsrLstar;
 // 	VpData->HostStackLayout.OriginalMsrLstar = NULL;
 }
+
+VOID SvHandleCpuidForL2(
+	_Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
+	_Inout_ PGUEST_CONTEXT GuestContext
+)
+{
+	int registers[4];   // EAX, EBX, ECX, and EDX
+	int leaf, subLeaf;
+	SEGMENT_ATTRIBUTE attribute;
+	UNREFERENCED_PARAMETER(attribute);
+
+	//
+	// Execute CPUID as requested.
+	//
+	leaf = static_cast<int>(GuestContext->VpRegs->Rax);
+	subLeaf = static_cast<int>(GuestContext->VpRegs->Rcx);
+	__cpuidex(registers, leaf, subLeaf);
+
+	switch (leaf)
+	{
+	case 0x40000000:
+		//
+		// Return a maximum supported hypervisor CPUID leaf range and a vendor
+		// ID signature as required by the spec.
+		//
+		registers[0] = CPUID_HV_MAX;
+		registers[1] = 'NmvS';  // "SvmNest     "
+		registers[2] = 'Jtse';
+		registers[3] = '    ';
+		break;
+
+	default:
+		break;
+	}
+
+	//
+   // Update guest's GPRs with results.
+   //
+	GuestContext->VpRegs->Rax = registers[0];
+	GuestContext->VpRegs->Rbx = registers[1];
+	GuestContext->VpRegs->Rcx = registers[2];
+	GuestContext->VpRegs->Rdx = registers[3];
+
+	//VpData->GuestVmcb.StateSaveArea.Rip = VpData->GuestVmcb.ControlArea.NRip;
+	PVMCB pVmcbGuest02va = (PVMCB)UtilVaFromPa(VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_guest_02_pa);
+	pVmcbGuest02va->StateSaveArea.Rip = pVmcbGuest02va->ControlArea.NRip;
+}

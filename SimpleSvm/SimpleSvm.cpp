@@ -14,6 +14,7 @@
 #include "SvmTraps.h"
 #include "SvmUtil.h"
 #include "HookSyscall/SvmHookMsr.h"
+#include "BaseUtil.h"
 
 EXTERN_C DRIVER_INITIALIZE DriverEntry;
 static DRIVER_UNLOAD SvDriverUnload;
@@ -357,40 +358,74 @@ SvHandleVmExit (
     NT_ASSERT(VpData->HostStackLayout.Reserved1 == MAXUINT64);
 
     //
-    // Guest's RAX is overwritten by the host's value on #VMEXIT and saved in
-    // the VMCB instead. Reflect the guest RAX to the context.
-    //
-    GuestRegisters->Rax = VpData->GuestVmcb.StateSaveArea.Rax;
-
-    guestContext.VpRegs = GuestRegisters;
-    guestContext.ExitVm = EXIT_REASON::EXIT_NOTHING;
-
-    //
     // Handle #VMEXIT according with its reason.
     //
-    switch (VpData->GuestVmcb.ControlArea.ExitCode)
-    {
-    case VMEXIT_CPUID:
-        SvHandleCpuid(VpData, &guestContext);
-        break;
-    case VMEXIT_MSR:
-        SvHandleMsrAccess(VpData, &guestContext);
-        break;
-    case VMEXIT_VMRUN:
-        //SvHandleVmrun(VpData, &guestContext);
-		SvHandleVmrunEx(VpData, &guestContext);
-        break;
-	case VMEXIT_VMMCALL: 
-		SvHandleVmmcall(VpData, &guestContext);
-		break;
-    case VMEXIT_NPF:
-        SV_DEBUG_BREAK();
-        break;
-    default:
-        SV_DEBUG_BREAK();
+	if (CPU_MODE::VmxMode != VpData->HostStackLayout.pProcessNestData->CpuMode)
+	{
+		//
+		// Guest's RAX is overwritten by the host's value on #VMEXIT and saved in
+		// the VMCB instead. Reflect the guest RAX to the context.
+		//
+		GuestRegisters->Rax = VpData->GuestVmcb.StateSaveArea.Rax;
+
+		guestContext.VpRegs = GuestRegisters;
+		guestContext.ExitVm = EXIT_REASON::EXIT_NOTHING;
+
+		switch (VpData->GuestVmcb.ControlArea.ExitCode)
+		{
+		case VMEXIT_CPUID:
+			SvHandleCpuid(VpData, &guestContext);
+			break;
+		case VMEXIT_MSR:
+			SvHandleMsrAccess(VpData, &guestContext);
+			break;
+		case VMEXIT_VMRUN:
+			//SvHandleVmrun(VpData, &guestContext);
+			SvHandleVmrunEx(VpData, &guestContext);
+			break;
+		case VMEXIT_VMMCALL:
+			SvHandleVmmcall(VpData, &guestContext);
+			break;
+		case VMEXIT_NPF:
+			SV_DEBUG_BREAK();
+			break;
+		default:
+			SV_DEBUG_BREAK();
 #pragma prefast(disable : __WARNING_USE_OTHER_FUNCTION, "Unrecoverble path.")
-        KeBugCheck(MANUALLY_INITIATED_CRASH);
-    }
+			KeBugCheck(MANUALLY_INITIATED_CRASH);
+		}
+	}
+	else
+	{
+		PVMCB pVmcbGuest02va = (PVMCB)UtilVaFromPa(VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_guest_02_pa);
+		UINT64 ullExitCode = pVmcbGuest02va->ControlArea.ExitCode;
+
+		GuestRegisters->Rax = pVmcbGuest02va->StateSaveArea.Rax;
+
+		guestContext.VpRegs = GuestRegisters;
+		guestContext.ExitVm = EXIT_REASON::EXIT_NOTHING;
+
+		switch (ullExitCode)
+		{
+		case VMEXIT_CPUID:
+			SV_DEBUG_BREAK();
+			SvHandleCpuidForL2(VpData, &guestContext);
+			break;
+		case VMEXIT_MSR:
+			
+			break;
+		case VMEXIT_VMRUN:
+			
+			break;
+		case VMEXIT_VMMCALL:
+			
+			break;
+		default:
+			SV_DEBUG_BREAK();
+#pragma prefast(disable : __WARNING_USE_OTHER_FUNCTION, "Unrecoverble path.")
+			KeBugCheck(MANUALLY_INITIATED_CRASH);
+		}
+	}
 
     //
     // Terminate the SimpleSvm hypervisor if requested.
@@ -437,7 +472,15 @@ SvHandleVmExit (
     // Reflect potentially updated guest's RAX to VMCB. Again, unlike other GPRs,
     // RAX is loaded from VMCB on VMRUN.
     //
-    VpData->GuestVmcb.StateSaveArea.Rax = guestContext.VpRegs->Rax;
+	if (CPU_MODE::VmxMode != VpData->HostStackLayout.pProcessNestData->CpuMode)
+	{
+		VpData->GuestVmcb.StateSaveArea.Rax = guestContext.VpRegs->Rax;
+	}
+	else
+	{
+		PVMCB pVmcbGuest02va = (PVMCB)UtilVaFromPa(VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_guest_02_pa);
+		pVmcbGuest02va->StateSaveArea.Rax = guestContext.VpRegs->Rax;
+	}
 
 Exit:
     NT_ASSERT(VpData->HostStackLayout.Reserved1 == MAXUINT64);
