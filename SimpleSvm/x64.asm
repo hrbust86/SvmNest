@@ -7,6 +7,9 @@
 ;
 ; @copyright  Copyright (c) 2017, Satoshi Tanda. All rights reserved.
 ;
+
+EXTERN g_pVmcbGuest02:DQ
+
 .code
 
 extern SvHandleVmExit : proc
@@ -183,7 +186,13 @@ SvLV10: ;
 		; check svm nest and set new vmcb
 		cmp al, 2 ; EXIT_REASON::EXIT_NEST_SET_NEW_VMCB;
 		jnz SvLV30 ;  if (ExitVm != 2) jmp SvLV30
-		mov rsp, [rsp + 8 * 13] ; rbx => rsp
+		mov rbx, [rsp + 8 * 12] ; GUEST_REGISTERS->rbx
+		mov g_pVmcbGuest02, rbx
+
+		POPAQ
+		mov rsp, g_pVmcbGuest02    ; Rsp <= VmcbGuest02
+
+		jmp SvLV10      ; else jmp SvLV10
 
 SvLV30:
         ;

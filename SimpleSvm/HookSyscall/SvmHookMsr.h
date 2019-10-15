@@ -11,6 +11,7 @@ typedef UINT32   uint;
 #endif
 
 extern "C" extern ULONG64 NtSyscallHandler64;
+extern "C" extern ULONG64 g_pVmcbGuest02;
 extern "C" extern ULONG64 SysCallNum;
 extern "C" VOID __stdcall HookPort64(uint pstack, uint param2, uint param3, uint param4);
 

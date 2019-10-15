@@ -8,6 +8,7 @@ extern "C" uint GetRax();
 extern "C" uint GetR10();
 
 ULONG64 NtSyscallHandler64 = 0;
+ULONG64 g_pVmcbGuest02 = NULL;
 ULONG64 SysCallNum = 0;
 KSPIN_LOCK g_InterfaceSplock;
 LIST_ENTRY g_HookList = {0};
