@@ -245,6 +245,9 @@ SvHandleVmrunEx(
 		//SvLaunchVm(&(VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_guest_02_pa));
         GuestContext->ExitVm = EXIT_REASON::EXIT_NEST_SET_VMCB02;
         GuestContext->VpRegs->Rbx = (UINT64)&(VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_guest_02_pa);
+
+        ENTER_GUEST_MODE(VpData->HostStackLayout.pProcessNestData->vcpu_vmx);
+
     }
 	else // 嵌套环境已经建立
     {
@@ -351,4 +354,7 @@ VOID SvHandleCpuidForL2(
 	//VpData->GuestVmcb.StateSaveArea.Rip = VpData->GuestVmcb.ControlArea.NRip;
 	PVMCB pVmcbGuest02va = (PVMCB)UtilVaFromPa(VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_guest_02_pa);
 	pVmcbGuest02va->StateSaveArea.Rip = pVmcbGuest02va->ControlArea.NRip;
+
+
+
 }

@@ -78,3 +78,41 @@ Return Value:
     //HYPERPLATFORM_LOG_DEBUG("VMM: %I64x Enter Root mode Reason: %d", vm, UtilVmRead(VmcsField::kVmExitReason));
     HYPERPLATFORM_LOG_DEBUG("VMM: %I64x Enter Root mode Reason: ", vm);
 }
+
+//------------------------------------------------------------------------------------------------//
+VMX_MODE
+VmxGetVmxMode(
+    _In_ VCPUVMX* vmx
+)
+/*++
+
+Desscription:
+
+    Get VMX Mode of the corresponding virtual processor
+
+Paremeters:
+
+    Guest Context
+
+Return Value:
+
+    Emulated-Root or Emulated-Guest Mode
+
+--*/
+{
+    if (vmx)
+    {
+        return vmx->inRoot;
+    }
+    else
+    {
+        return VMX_MODE::RootMode;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------//
+VCPUVMX* VmmpGetVcpuVmx(PVIRTUAL_PROCESSOR_DATA pVpdata)
+{
+    //return guest_context->stack->processor_data->vcpu_vmx;
+    return pVpdata->HostStackLayout.pProcessNestData->vcpu_vmx;
+}
