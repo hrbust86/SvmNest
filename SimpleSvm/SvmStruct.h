@@ -224,7 +224,7 @@ enum EXIT_REASON
 {
     EXIT_NOTHING = 0,
     EXIT_EXIT = 1,
-    EXIT_NEST_SET_NEW_VMCB =2
+    EXIT_NEST_SET_VMCB02 =2
 };
 
 typedef struct _GUEST_CONTEXT

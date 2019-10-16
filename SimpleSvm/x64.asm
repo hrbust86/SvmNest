@@ -184,7 +184,7 @@ SvLV10: ;
         add rsp, 80h
 
 		; check svm nest and set new vmcb
-		cmp al, 2 ; EXIT_REASON::EXIT_NEST_SET_NEW_VMCB;
+		cmp al, 2 ; EXIT_REASON::EXIT_NEST_SET_VMCB02;
 		jnz SvLV30 ;  if (ExitVm != 2) jmp SvLV30
 		mov rbx, [rsp + 8 * 12] ; GUEST_REGISTERS->rbx
 		mov g_pVmcbGuest02, rbx
