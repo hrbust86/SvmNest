@@ -8,3 +8,7 @@ ULONG64 UtilPaFromVa(void *va);
 void *UtilVaFromPa(ULONG64 pa);
 
 void SaveHostKernelGsBase(PVIRTUAL_PROCESSOR_DATA pVpdata);
+
+VOID ENTER_GUEST_MODE(_In_ VCPUVMX * vm);
+
+VOID LEAVE_GUEST_MODE(_In_ VCPUVMX * vm);
