@@ -351,22 +351,18 @@ VOID SvHandleCpuidForL2(
 		break;
 	}
 
-	//
-   // Update guest's GPRs with results.
-   //
-	GuestContext->VpRegs->Rax = registers[0];
-	GuestContext->VpRegs->Rbx = registers[1];
-	GuestContext->VpRegs->Rcx = registers[2];
-	GuestContext->VpRegs->Rdx = registers[3];
-
-	//VpData->GuestVmcb.StateSaveArea.Rip = VpData->GuestVmcb.ControlArea.NRip;
-
     if (VMX_MODE::RootMode == VmxGetVmxMode(VmmpGetVcpuVmx(VpData)))
     {
-        // retrun L2 guest
+		//
+		// Update guest's GPRs with results.
+		//
+		GuestContext->VpRegs->Rax = registers[0];
+		GuestContext->VpRegs->Rbx = registers[1];
+		GuestContext->VpRegs->Rcx = registers[2];
+		GuestContext->VpRegs->Rdx = registers[3];
         PVMCB pVmcbGuest02va = (PVMCB)UtilVaFromPa(VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_guest_02_pa);
         pVmcbGuest02va->StateSaveArea.Rip = pVmcbGuest02va->ControlArea.NRip;
-        return;
+        return; // return L1
     }
 
     PVMCB pVmcbGuest02va = (PVMCB)UtilVaFromPa(VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_guest_02_pa);
