@@ -116,3 +116,8 @@ VCPUVMX* VmmpGetVcpuVmx(PVIRTUAL_PROCESSOR_DATA pVpdata)
     //return guest_context->stack->processor_data->vcpu_vmx;
     return pVpdata->HostStackLayout.pProcessNestData->vcpu_vmx;
 }
+
+VOID SaveGuestVmcb12FromGuestVmcb02(VCPUVMX* vcpu)
+{
+    UNREFERENCED_PARAMETER(vcpu);
+}
