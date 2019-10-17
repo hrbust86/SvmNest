@@ -384,7 +384,6 @@ VOID SvHandleCpuidForL2(
     HYPERPLATFORM_LOG_DEBUG_SAFE("[SvHandleCpuidForL2] GuestContext->VpRegs->Rax  : %I64X \r\n", GuestContext->VpRegs->Rax);
     HYPERPLATFORM_LOG_DEBUG_SAFE("[SvHandleCpuidForL2] pVmcbGuest02va->StateSaveArea.Rsp  : %I64X \r\n", pVmcbGuest02va->StateSaveArea.Rsp);
     HYPERPLATFORM_LOG_DEBUG_SAFE("[SvHandleCpuidForL2] pVmcbGuest02va->StateSaveArea.Rip  : %I64X \r\n", pVmcbGuest02va->StateSaveArea.Rip);
-    HYPERPLATFORM_LOG_DEBUG_SAFE("[SvHandleCpuidForL2]   : %I64X \r\n", );
-
+    
     LEAVE_GUEST_MODE(VmmpGetVcpuVmx(VpData));     // retrun L1 host
 }
