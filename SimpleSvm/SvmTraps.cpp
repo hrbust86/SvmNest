@@ -154,7 +154,7 @@ SvHandleVmrunEx(
         SetvCpuMode(VpData, CPU_MODE::VmxMode);
         VpData->HostStackLayout.pProcessNestData->vcpu_vmx = nested_vmx;
 
-        HYPERPLATFORM_LOG_DEBUG("VMXON: Run Successfully with  Total Vitrualized Core: %x  Current Cpu: %x in Cpu Group : %x  Number: %x \r\n",
+        SvDebugPrint("[SvHandleVmrunEx]: Run Successfully with  Total Vitrualized Core: %x  Current Cpu: %x in Cpu Group : %x  Number: %x \r\n",
              nested_vmx->InitialCpuNumber, number.Group, number.Number);
         
         // Load VMCB02 into physical cpu , And perform some check on VMCB12
@@ -169,13 +169,13 @@ SvHandleVmrunEx(
 
         nested_vmx->kVirtualProcessorId = (USHORT)KeGetCurrentProcessorNumberEx(nullptr) + 1;
 
-        HYPERPLATFORM_LOG_DEBUG_SAFE("[VMPTRLD] Run Successfully \r\n");
-        HYPERPLATFORM_LOG_DEBUG_SAFE("[VMPTRLD] Current Cpu: %x in Cpu Group : %x  Number: %x \r\n", nested_vmx->InitialCpuNumber, number.Group, number.Number);
+        SvDebugPrint("[SvHandleVmrunEx] Run Successfully \r\n");
+        SvDebugPrint("[SvHandleVmrunEx] Current Cpu: %x in Cpu Group : %x  Number: %x \r\n", nested_vmx->InitialCpuNumber, number.Group, number.Number);
 
         // emulate write and read 
         //  SvLaunchVm(&vpData->HostStackLayout.GuestVmcbPa);
         VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_guest_12_pa = GuestContext->VpRegs->Rax;
-        HYPERPLATFORM_LOG_DEBUG("SvHandleVmrunEx : vmcb12pa : %I64X  \r\n", GuestContext->VpRegs->Rax);
+        SvDebugPrint("[SvHandleVmrunEx] : vmcb12pa : %I64X  \r\n", GuestContext->VpRegs->Rax);
 		//VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_host_12_pa = VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_guest_02_pa;
         VpData->HostStackLayout.pProcessNestData->vcpu_vmx->hostStateAreaPa_12_pa = VpData->HostStackLayout.pProcessNestData->GuestSvmHsave12.QuadPart;
 
@@ -403,13 +403,13 @@ VOID SvHandleCpuidForL2ToL1(
     pVmcbGuest02va->StateSaveArea.Rip = VpData->GuestVmcb.ControlArea.NRip; // L2 host ip 
     pVmcbGuest02va->StateSaveArea.Rflags = VpData->GuestVmcb.StateSaveArea.Rflags; // not right , but can not find
 
-    HYPERPLATFORM_LOG_DEBUG_SAFE("[SvHandleCpuidForL2] pVmcbGuest12va->StateSaveArea.Rax  : %I64X \r\n", pVmcbGuest12va->StateSaveArea.Rax);
-    HYPERPLATFORM_LOG_DEBUG_SAFE("[SvHandleCpuidForL2] pVmcbGuest12va->StateSaveArea.Rsp  : %I64X \r\n", pVmcbGuest12va->StateSaveArea.Rsp);
-    HYPERPLATFORM_LOG_DEBUG_SAFE("[SvHandleCpuidForL2] pVmcbGuest12va->StateSaveArea.Rip  : %I64X \r\n", pVmcbGuest12va->StateSaveArea.Rip);
-    HYPERPLATFORM_LOG_DEBUG_SAFE("[SvHandleCpuidForL2] pVmcbGuest12va->ControlArea.NRip  : %I64X \r\n", pVmcbGuest12va->ControlArea.NRip);
-    HYPERPLATFORM_LOG_DEBUG_SAFE("[SvHandleCpuidForL2] GuestContext->VpRegs->Rax  : %I64X \r\n", GuestContext->VpRegs->Rax);
-    HYPERPLATFORM_LOG_DEBUG_SAFE("[SvHandleCpuidForL2] pVmcbGuest02va->StateSaveArea.Rsp  : %I64X \r\n", pVmcbGuest02va->StateSaveArea.Rsp);
-    HYPERPLATFORM_LOG_DEBUG_SAFE("[SvHandleCpuidForL2] pVmcbGuest02va->StateSaveArea.Rip  : %I64X \r\n", pVmcbGuest02va->StateSaveArea.Rip);
+    SvDebugPrint("[SvHandleCpuidForL2ToL1] pVmcbGuest12va->StateSaveArea.Rax  : %I64X \r\n", pVmcbGuest12va->StateSaveArea.Rax);
+    SvDebugPrint("[SvHandleCpuidForL2ToL1] pVmcbGuest12va->StateSaveArea.Rsp  : %I64X \r\n", pVmcbGuest12va->StateSaveArea.Rsp);
+    SvDebugPrint("[SvHandleCpuidForL2ToL1] pVmcbGuest12va->StateSaveArea.Rip  : %I64X \r\n", pVmcbGuest12va->StateSaveArea.Rip);
+    SvDebugPrint("[SvHandleCpuidForL2ToL1] pVmcbGuest12va->ControlArea.NRip  : %I64X \r\n", pVmcbGuest12va->ControlArea.NRip);
+    SvDebugPrint("[SvHandleCpuidForL2ToL1] GuestContext->VpRegs->Rax  : %I64X \r\n", GuestContext->VpRegs->Rax);
+    SvDebugPrint("[SvHandleCpuidForL2ToL1] pVmcbGuest02va->StateSaveArea.Rsp  : %I64X \r\n", pVmcbGuest02va->StateSaveArea.Rsp);
+    SvDebugPrint("[SvHandleCpuidForL2ToL1] pVmcbGuest02va->StateSaveArea.Rip  : %I64X \r\n", pVmcbGuest02va->StateSaveArea.Rip);
     
     LEAVE_GUEST_MODE(VmmpGetVcpuVmx(VpData));     // retrun L1 host
 }

@@ -50,7 +50,7 @@ Return Value:
 --*/
 {
     vm->inRoot = GuestMode;
-    HYPERPLATFORM_LOG_DEBUG("VMM: %I64x Enter Guest mode", vm);
+    SvDebugPrint("VMM: %I64x Enter Guest mode", vm);
 }
 
 //------------------------------------------------------------------------------------------------//
@@ -76,7 +76,7 @@ Return Value:
 {
     vm->inRoot = RootMode;
     //HYPERPLATFORM_LOG_DEBUG("VMM: %I64x Enter Root mode Reason: %d", vm, UtilVmRead(VmcsField::kVmExitReason));
-    HYPERPLATFORM_LOG_DEBUG("VMM: %I64x Enter Root mode Reason: ", vm);
+    SvDebugPrint("VMM: %I64x Enter Root mode Reason: ", vm);
 }
 
 //------------------------------------------------------------------------------------------------//
