@@ -1,4 +1,5 @@
 #include "SvmUtil.h"
+#include "BaseUtil.h"
 
 /*!
 @brief      Sends a message to the kernel debugger.
@@ -60,6 +61,29 @@ SvInjectGeneralProtectionException(
 	event.Fields.ErrorCodeValid = 1;
 	event.Fields.Valid = 1;
 	VpData->GuestVmcb.ControlArea.EventInj = event.AsUInt64;
+}
+
+VOID
+SvInjectGeneralProtectionExceptionVmcb02(
+    _Inout_ PVIRTUAL_PROCESSOR_DATA VpData
+)
+{
+    //SV_DEBUG_BREAK();
+    EVENTINJ event;
+
+    //
+    // Inject #GP(vector = 13, type = 3 = exception) with a valid error code.
+    // An error code are always zero. See "#GP—General-Protection Exception
+    // (Vector 13)" for details about the error code.
+    //
+    event.AsUInt64 = 0;
+    event.Fields.Vector = 13;
+    event.Fields.Type = 3;
+    event.Fields.ErrorCodeValid = 1;
+    event.Fields.Valid = 1;
+    //VpData->GuestVmcb.ControlArea.EventInj = event.AsUInt64;
+    PVMCB pVmcbGuest02va = (PVMCB)UtilVaFromPa(VmmpGetVcpuVmx(VpData)->vmcb_guest_02_pa);
+    pVmcbGuest02va->ControlArea.EventInj = event.AsUInt64;
 }
 
 void UtilWriteMsr64(Msr msr, ULONG64 value) {

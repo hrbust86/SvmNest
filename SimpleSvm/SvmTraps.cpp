@@ -253,18 +253,36 @@ SvHandleVmrunEx(
 	else // 嵌套环境已经建立
     {
 		SV_DEBUG_BREAK();
-        ENTER_GUEST_MODE(VpData->HostStackLayout.pProcessNestData->vcpu_vmx);
-        PVMCB pVmcbGuest02va = (PVMCB)UtilVaFromPa(VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_guest_02_pa);
-        PVMCB pVmcbGuest12va = (PVMCB)UtilVaFromPa(VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_guest_12_pa);
-        pVmcbGuest02va->StateSaveArea.Rflags = pVmcbGuest12va->StateSaveArea.Rflags;
-        pVmcbGuest02va->StateSaveArea.Rsp = pVmcbGuest12va->StateSaveArea.Rsp;
-        pVmcbGuest02va->StateSaveArea.Rip = pVmcbGuest12va->StateSaveArea.Rip;
 		//SvInjectGeneralProtectionException(VpData);
 // 		PVMCB pVmcbGuest12va = (PVMCB)UtilVaFromPa(VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_guest_12_pa);
 // 		VpData->GuestVmcb.StateSaveArea.Rip = pVmcbGuest12va->StateSaveArea.Rip;
     }
 
 	//VpData->GuestVmcb.StateSaveArea.Rip = VpData->GuestVmcb.ControlArea.NRip; // need npt
+}
+
+VOID
+SvHandleVmrunExForL1ToL2(
+    _Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
+    _Inout_ PGUEST_CONTEXT GuestContext
+)
+{
+    UNREFERENCED_PARAMETER(GuestContext);
+    if ( VMX_MODE::RootMode == VmxGetVmxMode(VmmpGetVcpuVmx(VpData)))
+    {
+        PVMCB pVmcbGuest02va = (PVMCB)UtilVaFromPa(VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_guest_02_pa);
+        PVMCB pVmcbGuest12va = (PVMCB)UtilVaFromPa(VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_guest_12_pa);
+        pVmcbGuest02va->StateSaveArea.Rflags = pVmcbGuest12va->StateSaveArea.Rflags;
+        pVmcbGuest02va->StateSaveArea.Rsp = pVmcbGuest12va->StateSaveArea.Rsp;
+        pVmcbGuest02va->StateSaveArea.Rip = pVmcbGuest12va->StateSaveArea.Rip;
+
+        ENTER_GUEST_MODE(VpData->HostStackLayout.pProcessNestData->vcpu_vmx);
+    }
+    else
+    {
+        SvInjectGeneralProtectionExceptionVmcb02(VpData);
+        // something error
+    }
 }
 
 //Mnemonic Opcode Description

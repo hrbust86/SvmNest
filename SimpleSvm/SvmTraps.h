@@ -37,3 +37,9 @@ VOID SvHandleCpuidForL2ToL1(
 	_Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
 	_Inout_ PGUEST_CONTEXT GuestContext
 );
+
+VOID
+SvHandleVmrunExForL1ToL2(
+    _Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
+    _Inout_ PGUEST_CONTEXT GuestContext
+);
