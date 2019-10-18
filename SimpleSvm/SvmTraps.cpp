@@ -275,6 +275,7 @@ SvHandleVmrunExForL1ToL2(
         pVmcbGuest02va->StateSaveArea.Rflags = pVmcbGuest12va->StateSaveArea.Rflags;
         pVmcbGuest02va->StateSaveArea.Rsp = pVmcbGuest12va->StateSaveArea.Rsp;
         pVmcbGuest02va->StateSaveArea.Rip = pVmcbGuest12va->StateSaveArea.Rip;
+        pVmcbGuest02va->StateSaveArea.LStar = pVmcbGuest12va->StateSaveArea.LStar;
 
         ENTER_GUEST_MODE(VpData->HostStackLayout.pProcessNestData->vcpu_vmx);
     }
@@ -397,6 +398,8 @@ VOID SvHandleCpuidForL2ToL1(
     pVmcbGuest12va->ControlArea.ExitInfo2 = pVmcbGuest02va->ControlArea.ExitInfo2;
     pVmcbGuest12va->ControlArea.ExitIntInfo = pVmcbGuest02va->ControlArea.ExitIntInfo;
     pVmcbGuest12va->ControlArea.EventInj = pVmcbGuest02va->ControlArea.EventInj;
+    pVmcbGuest12va->StateSaveArea.Cpl = pVmcbGuest02va->StateSaveArea.Cpl;
+    pVmcbGuest12va->StateSaveArea.LStar = pVmcbGuest02va->StateSaveArea.LStar;
 
     GuestContext->VpRegs->Rax = VmmpGetVcpuVmx(VpData)->vmcb_guest_12_pa; //  L2 rax, vmcb12pa
     pVmcbGuest02va->StateSaveArea.Rsp = VpData->GuestVmcb.StateSaveArea.Rsp; // L2 host rsp 
