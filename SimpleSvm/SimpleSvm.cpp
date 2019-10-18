@@ -412,11 +412,11 @@ SvHandleVmExit (
 			SvHandleCpuidForL2ToL1(VpData, &guestContext);
 			break;
 		case VMEXIT_MSR:
-            SV_DEBUG_BREAK();
-            SvHandleVmrunExForL1ToL2(VpData, &guestContext);
+            
 			break;
 		case VMEXIT_VMRUN:
-			
+            SV_DEBUG_BREAK();
+            SvHandleVmrunExForL1ToL2(VpData, &guestContext);
 			break;
 		case VMEXIT_VMMCALL:
 			
