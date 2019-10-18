@@ -7,7 +7,7 @@ VOID SvHandleVmmcall(
 	_Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
 	_Inout_ PGUEST_CONTEXT GuestContext);
 
-VOID SvHandleVmmcallEx(
+VOID SvHandleVmmcallNest(
     _Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
     _Inout_ PGUEST_CONTEXT GuestContext);
 

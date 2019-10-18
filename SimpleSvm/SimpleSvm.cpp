@@ -418,7 +418,7 @@ SvHandleVmExit (
             SvHandleVmrunExForL1ToL2(VpData, &guestContext);
 			break;
 		case VMEXIT_VMMCALL:
-            SvHandleVmmcallEx(VpData, &guestContext);
+            SvHandleVmmcallNest(VpData, &guestContext);
 			break;
 		default:
 			SV_DEBUG_BREAK();
