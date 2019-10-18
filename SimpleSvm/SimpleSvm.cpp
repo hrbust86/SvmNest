@@ -405,21 +405,20 @@ SvHandleVmExit (
 		guestContext.VpRegs = GuestRegisters;
 		guestContext.ExitVm = EXIT_REASON::EXIT_NOTHING;
 
+        SV_DEBUG_BREAK();
 		switch (ullExitCode)
 		{
 		case VMEXIT_CPUID:
-			SV_DEBUG_BREAK();
 			SvHandleCpuidForL2ToL1(VpData, &guestContext);
 			break;
 		case VMEXIT_MSR:
             
 			break;
 		case VMEXIT_VMRUN:
-            SV_DEBUG_BREAK();
             SvHandleVmrunExForL1ToL2(VpData, &guestContext);
 			break;
 		case VMEXIT_VMMCALL:
-			
+            SvHandleVmmcallEx(VpData, &guestContext);
 			break;
 		default:
 			SV_DEBUG_BREAK();

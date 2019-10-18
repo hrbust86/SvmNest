@@ -17,4 +17,5 @@ VMX_MODE VmxGetVmxMode(_In_ VCPUVMX* vmx);
 
 VCPUVMX* VmmpGetVcpuVmx(PVIRTUAL_PROCESSOR_DATA pVpdata);
 
-VOID SaveGuestVmcb12FromGuestVmcb02(VCPUVMX* vcpu);
+VOID SaveGuestVmcb12FromGuestVmcb02(_Inout_ PVIRTUAL_PROCESSOR_DATA VpData, 
+_Inout_ PGUEST_CONTEXT GuestContext);
