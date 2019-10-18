@@ -412,7 +412,7 @@ SvHandleVmExit (
 			SvHandleCpuidForL2ToL1(VpData, &guestContext);
 			break;
 		case VMEXIT_MSR:
-            
+			SvHandleMsrAccessNest(VpData, &guestContext);
 			break;
 		case VMEXIT_VMRUN:
             SvHandleVmrunExForL1ToL2(VpData, &guestContext);
