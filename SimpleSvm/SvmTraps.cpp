@@ -428,7 +428,10 @@ SvHandleMsrAccessNest(
 		}
 		else
 		{
-			
+            Msr MsrNum = (Msr)GuestContext->VpRegs->Rcx;
+            MsrValue.LowPart = (ULONG)GuestContext->VpRegs->Rax;
+            MsrValue.HighPart = (ULONG)GuestContext->VpRegs->Rdx;
+            UtilWriteMsr64(MsrNum, MsrValue.QuadPart);
 		}
 		pVmcbGuest02va->StateSaveArea.Rip = pVmcbGuest02va->ControlArea.NRip;
 		return; // return L1
