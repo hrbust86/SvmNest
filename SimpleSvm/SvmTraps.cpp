@@ -423,7 +423,7 @@ SvHandleMsrAccessNest(
 	}
 
     UINT32 InterceptMisc1 = GetCurrentVmcbGuest12(VpData)->ControlArea.InterceptMisc1;
-    if (InterceptMisc1 & SVM_INTERCEPT_MISC1_MSR_PROT)
+    if ((InterceptMisc1 & SVM_INTERCEPT_MISC1_MSR_PROT) && CheckVmcb12MsrBit(VpData, GuestContext))
     {
         SaveGuestVmcb12FromGuestVmcb02(VpData, GuestContext);
         LEAVE_GUEST_MODE(VmmpGetVcpuVmx(VpData));     // retrun L1 host

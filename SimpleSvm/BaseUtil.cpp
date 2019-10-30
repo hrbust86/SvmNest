@@ -186,19 +186,56 @@ _Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
     }
 }
 
-BOOL CheckVmcb12MsrBit(
+BOOLEAN CheckVmcb12MsrBit(
 _Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
     _Inout_ PGUEST_CONTEXT GuestContext)
 {
     PVMCB pVmcbGuest12va = GetCurrentVmcbGuest12(VpData);
+	PVMCB pVmcbGuest02va = GetCurrentVmcbGuest02(VpData);
+	BOOL bIsWrite = (BOOL)pVmcbGuest02va->ControlArea.ExitInfo1;
+
     PVOID MsrPermissionsMap = UtilVaFromPa(pVmcbGuest12va->ControlArea.MsrpmBasePa);
     RTL_BITMAP bitmapHeader;
+	static const UINT32 FIRST_MSR_RANGE_BASE = 0x00000000;
+	static const UINT32 SECOND_MSR_RANGE_BASE = 0xc0000000;
+	static const UINT32 THIRD_MSR_RANGE_BASE = 0xC0010000;
+	static const UINT32 BITS_PER_MSR = 2;
+	static const UINT32 FIRST_MSRPM_OFFSET = 0x000 * CHAR_BIT;
+	static const UINT32 SECOND_MSRPM_OFFSET = 0x800 * CHAR_BIT;
+	static const UINT32 THIRD_MSRPM_OFFSET = 0x1000 * CHAR_BIT;
+	ULONG64 offsetFromBase = 0;
+    ULONG64 offset = 0;
+
     RtlInitializeBitMap(&bitmapHeader,
         reinterpret_cast<PULONG>(MsrPermissionsMap),
         SVM_MSR_PERMISSIONS_MAP_SIZE * CHAR_BIT
     );
 
+	UINT64 MsrNum = GuestContext->VpRegs->Rcx;
+	if (MsrNum > FIRST_MSR_RANGE_BASE && MsrNum < SECOND_MSR_RANGE_BASE)
+	{
+		offsetFromBase = (MsrNum - FIRST_MSR_RANGE_BASE) * BITS_PER_MSR;
+		offset = FIRST_MSRPM_OFFSET + offsetFromBase;
+	}
+	if (MsrNum > SECOND_MSR_RANGE_BASE && MsrNum < THIRD_MSR_RANGE_BASE)
+	{
+        offsetFromBase = (MsrNum - SECOND_MSR_RANGE_BASE) * BITS_PER_MSR;
+        offset = SECOND_MSRPM_OFFSET + offsetFromBase;
+	}
+	if (MsrNum > THIRD_MSR_RANGE_BASE)
+	{
+        offsetFromBase = (MsrNum - THIRD_MSR_RANGE_BASE) * BITS_PER_MSR;
+        offset = THIRD_MSRPM_OFFSET + offsetFromBase;
+	}
 
-
-    return TRUE;
+    BOOLEAN bret = FALSE;
+    if (FALSE == bIsWrite)
+    {
+        bret = RtlTestBit(&bitmapHeader, (ULONG)offset);
+    }
+    else
+    {
+        bret = RtlTestBit(&bitmapHeader, ULONG(offset + 1));
+    }
+    return bret;
 }
