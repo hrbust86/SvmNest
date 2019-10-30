@@ -420,6 +420,9 @@ SvHandleVmExit (
 		case VMEXIT_VMMCALL:
             SvHandleVmmcallNest(VpData, &guestContext);
 			break;
+        case VMEXIT_EXCEPTION_BP:
+            SvHandleBreakPointExceptionNest(VpData, &guestContext);
+            break;
 		default:
 			SV_DEBUG_BREAK();
 #pragma prefast(disable : __WARNING_USE_OTHER_FUNCTION, "Unrecoverble path.")
@@ -627,6 +630,13 @@ SvPrepareForVirtualization (
     VpData->HostStackLayout.pProcessNestData->GuestMsrEFER.QuadPart = __readmsr((ULONGLONG)Msr::kIa32Efer);
     VpData->HostStackLayout.pProcessNestData->GuestSvmHsave12.QuadPart = 0;
     //InterlockedIncrement(&VpData->HostStackLayout.pProcessNestData->shared_data->reference_count);
+
+    //
+    // Intercept break point exception. This is required to redirect execution
+    // of a hooked address (where a breakpoint is set) to the corresponding
+    // hook handler function with our hypervisor.
+    //
+    VpData->GuestVmcb.ControlArea.InterceptException |= (1UL << 3);
 
     //
     // Configure to trigger #VMEXIT with CPUID and VMRUN instructions. CPUID is

@@ -38,6 +38,11 @@ SvInjectGeneralProtectionExceptionVmcb02(
     _Inout_ PVIRTUAL_PROCESSOR_DATA VpData
 );
 
+VOID
+SvInjectBPExceptionVmcb02(
+    _Inout_ PVIRTUAL_PROCESSOR_DATA VpData
+);
+
 void UtilWriteMsr64(Msr msr, ULONG64 value);
 
 ULONG64 UtilReadMsr64(Msr msr);

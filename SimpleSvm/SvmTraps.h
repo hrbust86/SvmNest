@@ -53,3 +53,8 @@ SvHandleMsrAccessNest(
 	_Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
 	_Inout_ PGUEST_CONTEXT GuestContext
 );
+
+VOID SvHandleBreakPointExceptionNest(
+    _Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
+    _Inout_ PGUEST_CONTEXT GuestContext
+);
