@@ -414,32 +414,27 @@ SvHandleMsrAccessNest(
 	_Inout_ PGUEST_CONTEXT GuestContext
 )
 {
+    PVMCB pVmcbGuest02va = GetCurrentVmcbGuest02(VpData);
 	if (VMX_MODE::RootMode == VmxGetVmxMode(VmmpGetVcpuVmx(VpData)))
 	{
-		LARGE_INTEGER MsrValue = { 0 };
-		PVMCB pVmcbGuest02va = (PVMCB)UtilVaFromPa(VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_guest_02_pa);
-
-		if (0 == pVmcbGuest02va->ControlArea.ExitInfo1) // read
-		{
-			Msr MsrNum = (Msr)GuestContext->VpRegs->Rcx;
-			MsrValue.QuadPart = UtilReadMsr64(MsrNum); // read from host
-
-			GuestContext->VpRegs->Rax = MsrValue.LowPart;
-			GuestContext->VpRegs->Rdx = MsrValue.HighPart;
-		}
-		else
-		{
-            Msr MsrNum = (Msr)GuestContext->VpRegs->Rcx;
-            MsrValue.LowPart = (ULONG)GuestContext->VpRegs->Rax;
-            MsrValue.HighPart = (ULONG)GuestContext->VpRegs->Rdx;
-            UtilWriteMsr64(MsrNum, MsrValue.QuadPart);
-		}
+        HandleMsrReadAndWrite(VpData, GuestContext);
 		pVmcbGuest02va->StateSaveArea.Rip = pVmcbGuest02va->ControlArea.NRip;
 		return; // return L1
 	}
 
-	SaveGuestVmcb12FromGuestVmcb02(VpData, GuestContext);
-	LEAVE_GUEST_MODE(VmmpGetVcpuVmx(VpData));     // retrun L1 host
+    UINT32 InterceptMisc1 = GetCurrentVmcbGuest12(VpData)->ControlArea.InterceptMisc1;
+    if (InterceptMisc1 & SVM_INTERCEPT_MISC1_MSR_PROT)
+    {
+        SaveGuestVmcb12FromGuestVmcb02(VpData, GuestContext);
+        LEAVE_GUEST_MODE(VmmpGetVcpuVmx(VpData));     // retrun L1 host
+        return;
+    }
+    else
+    {
+        HandleMsrReadAndWrite(VpData, GuestContext);
+        pVmcbGuest02va->StateSaveArea.Rip = pVmcbGuest02va->ControlArea.NRip;
+        return;
+    }
 }
 
 VOID SvHandleBreakPointExceptionNest(

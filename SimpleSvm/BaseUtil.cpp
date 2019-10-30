@@ -163,3 +163,42 @@ VMCB * GetCurrentVmcbGuest02(PVIRTUAL_PROCESSOR_DATA pVpdata)
     return pVmcbGuest02va;
 }
 
+VOID HandleMsrReadAndWrite(
+_Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
+    _Inout_ PGUEST_CONTEXT GuestContext)
+{
+    PVMCB pVmcbGuest02va = GetCurrentVmcbGuest02(VpData);
+    LARGE_INTEGER MsrValue = { 0 };
+    if (0 == pVmcbGuest02va->ControlArea.ExitInfo1) // read
+    {
+        Msr MsrNum = (Msr)GuestContext->VpRegs->Rcx;
+        MsrValue.QuadPart = UtilReadMsr64(MsrNum); // read from host
+
+        GuestContext->VpRegs->Rax = MsrValue.LowPart;
+        GuestContext->VpRegs->Rdx = MsrValue.HighPart;
+    }
+    else
+    {
+        Msr MsrNum = (Msr)GuestContext->VpRegs->Rcx;
+        MsrValue.LowPart = (ULONG)GuestContext->VpRegs->Rax;
+        MsrValue.HighPart = (ULONG)GuestContext->VpRegs->Rdx;
+        UtilWriteMsr64(MsrNum, MsrValue.QuadPart);
+    }
+}
+
+BOOL CheckVmcb12MsrBit(
+_Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
+    _Inout_ PGUEST_CONTEXT GuestContext)
+{
+    PVMCB pVmcbGuest12va = GetCurrentVmcbGuest12(VpData);
+    PVOID MsrPermissionsMap = UtilVaFromPa(pVmcbGuest12va->ControlArea.MsrpmBasePa);
+    RTL_BITMAP bitmapHeader;
+    RtlInitializeBitMap(&bitmapHeader,
+        reinterpret_cast<PULONG>(MsrPermissionsMap),
+        SVM_MSR_PERMISSIONS_MAP_SIZE * CHAR_BIT
+    );
+
+
+
+    return TRUE;
+}

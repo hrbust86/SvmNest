@@ -23,3 +23,7 @@ _Inout_ PGUEST_CONTEXT GuestContext);
 VMCB * GetCurrentVmcbGuest12(PVIRTUAL_PROCESSOR_DATA pVpdata);
 
 VMCB * GetCurrentVmcbGuest02(PVIRTUAL_PROCESSOR_DATA pVpdata);
+
+VOID HandleMsrReadAndWrite(
+    _Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
+    _Inout_ PGUEST_CONTEXT GuestContext);
