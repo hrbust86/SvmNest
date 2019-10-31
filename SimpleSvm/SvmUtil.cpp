@@ -101,6 +101,20 @@ SvInjectBPExceptionVmcb02(
     GetCurrentVmcbGuest02(VpData)->ControlArea.EventInj = event.AsUInt64;
 }
 
+VOID
+SvInjectBPExceptionVmcb01(
+    _Inout_ PVIRTUAL_PROCESSOR_DATA VpData
+)
+{
+    EVENTINJ event;
+    event.AsUInt64 = 0;
+    event.Fields.Vector = 3; //  #BP¡ªBreakpoint Exception (Vector 3)
+    event.Fields.Type = 4;  // 4 Software interrupt (INTn instruction)
+    event.Fields.ErrorCodeValid = 1;  // EV (Error Code Valid)¡ªBit 11. Set to 1 if the exception should push an error code onto the stack; clear to 0 otherwise. 
+    event.Fields.Valid = 1; //  V (Valid)¡ªBit 31. Set to 1 if an event is to be injected into the guest; clear to 0 otherwise. 
+    VpData->GuestVmcb.ControlArea.EventInj = event.AsUInt64;
+}
+
 void UtilWriteMsr64(Msr msr, ULONG64 value) {
 	__writemsr(static_cast<unsigned long>(msr), value);
 }

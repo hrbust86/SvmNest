@@ -386,6 +386,9 @@ SvHandleVmExit (
 		case VMEXIT_VMMCALL:
 			SvHandleVmmcall(VpData, &guestContext);
 			break;
+        case VMEXIT_EXCEPTION_BP:
+            SvHandleBreakPointException(VpData, &guestContext);
+            break;
 		case VMEXIT_NPF:
 			SV_DEBUG_BREAK();
 			break;

@@ -128,6 +128,16 @@ VOID SvHandleEffer(
     VpData->GuestVmcb.StateSaveArea.Rip = VpData->GuestVmcb.ControlArea.NRip; // need npt
 }
 
+VOID SvHandleBreakPointException(
+    _Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
+    _Inout_ PGUEST_CONTEXT GuestContext
+)
+{
+    UNREFERENCED_PARAMETER(GuestContext);
+    SvInjectBPExceptionVmcb01(VpData);
+    VpData->GuestVmcb.StateSaveArea.Rip = VpData->GuestVmcb.ControlArea.NRip; // need npt
+}
+
 _IRQL_requires_same_
 VOID
 SvHandleVmrunEx(
