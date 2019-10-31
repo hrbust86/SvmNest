@@ -189,17 +189,6 @@ SvHandleVmrunEx(
 		//VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_host_12_pa = VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_guest_02_pa;
         VpData->HostStackLayout.pProcessNestData->vcpu_vmx->hostStateAreaPa_12_pa = VpData->HostStackLayout.pProcessNestData->GuestSvmHsave12.QuadPart;
 
-        /*
-        Emulating VMEntry behavior from L1 to L2.
-
-        After L1 handles any VM Exit and should be executes VMRESUME for back L2
-        But this time trapped by VMCS01 and We can't get any VM-Exit information
-        from it. So we need to read from VMCS12 and return from here immediately.
-        We saved the vmcs02 GuestRip into VMCS12 our VMExit Handler because when
-        L1 was executing VMRESUME(We injected VMExit to it), and it is running on
-        VMCS01, we can't and shouldn't change it.
-        */
-
 		// 01 -> 02
 		// PrepareHostAndControlField
 		PVMCB pVmcbGuest02va = (PVMCB)UtilVaFromPa(VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_guest_02_pa);
