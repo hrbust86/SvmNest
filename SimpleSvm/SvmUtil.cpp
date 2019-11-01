@@ -94,8 +94,8 @@ SvInjectBPExceptionVmcb02(
     EVENTINJ event;
     event.AsUInt64 = 0;
     event.Fields.Vector = 3; //  #BP！Breakpoint Exception (Vector 3)
-    event.Fields.Type = 4;  // 4 Software interrupt (INTn instruction)
-    event.Fields.ErrorCodeValid = 1;  // EV (Error Code Valid)！Bit 11. Set to 1 if the exception should push an error code onto the stack; clear to 0 otherwise. 
+    event.Fields.Type = 3;  
+    //event.Fields.ErrorCodeValid = 1;  // EV (Error Code Valid)！Bit 11. Set to 1 if the exception should push an error code onto the stack; clear to 0 otherwise. 
     event.Fields.Valid = 1; //  V (Valid)！Bit 31. Set to 1 if an event is to be injected into the guest; clear to 0 otherwise. 
 
     GetCurrentVmcbGuest02(VpData)->ControlArea.EventInj = event.AsUInt64;
@@ -109,8 +109,8 @@ SvInjectBPExceptionVmcb01(
     EVENTINJ event;
     event.AsUInt64 = 0;
     event.Fields.Vector = 3; //  #BP！Breakpoint Exception (Vector 3)
-    event.Fields.Type = 4;  // 4 Software interrupt (INTn instruction)
-    event.Fields.ErrorCodeValid = 1;  // EV (Error Code Valid)！Bit 11. Set to 1 if the exception should push an error code onto the stack; clear to 0 otherwise. 
+    event.Fields.Type = 3;  
+    //event.Fields.ErrorCodeValid = 1;  // EV (Error Code Valid)！Bit 11. Set to 1 if the exception should push an error code onto the stack; clear to 0 otherwise. 
     event.Fields.Valid = 1; //  V (Valid)！Bit 31. Set to 1 if an event is to be injected into the guest; clear to 0 otherwise. 
     VpData->GuestVmcb.ControlArea.EventInj = event.AsUInt64;
 }
