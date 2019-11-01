@@ -195,6 +195,7 @@ SvHandleVmrunEx(
 		PVMCB pVmcbGuest12va = (PVMCB)UtilVaFromPa(VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_guest_12_pa);
 		PVMCB pVmcbGuest01va = &VpData->GuestVmcb;
 
+        __svm_vmsave(VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_guest_02_pa);
 		// 01 and 12 -> 02  ControlField
 		pVmcbGuest02va->ControlArea.InterceptMisc1 = pVmcbGuest01va->ControlArea.InterceptMisc1 | pVmcbGuest12va->ControlArea.InterceptMisc1;
 		pVmcbGuest02va->ControlArea.InterceptMisc2 = pVmcbGuest01va->ControlArea.InterceptMisc2 | pVmcbGuest12va->ControlArea.InterceptMisc2;
@@ -237,7 +238,6 @@ SvHandleVmrunEx(
 		pVmcbGuest02va->StateSaveArea.GPat = __readmsr(IA32_MSR_PAT);
 
 		SaveHostKernelGsBase(VpData);
-		__svm_vmsave(VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_guest_02_pa);
 		__writemsr(SVM_MSR_VM_HSAVE_PA, VpData->HostStackLayout.pProcessNestData->GuestSvmHsave12.QuadPart); // prevent to destroy the 01 HostStateArea
 		//__svm_vmrun(VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_guest_02_pa);
 		VpData->HostStackLayout.pProcessNestData->vcpu_vmx->pVpdata = VpData;
