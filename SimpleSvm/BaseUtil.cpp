@@ -241,3 +241,17 @@ _Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
     }
     return bret;
 }
+
+void ClearVGIF(PVIRTUAL_PROCESSOR_DATA VpData)
+{
+    //60h 9 VGIF value(0 每 Virtual interrupts are masked, 1 每 Virtual Interrupts are unmasked)
+    UINT64 tmp = ~GetCurrentVmcbGuest02(VpData)->ControlArea.VIntr;
+    tmp |= (1UL << 9);
+    GetCurrentVmcbGuest02(VpData)->ControlArea.VIntr = ~tmp;
+}
+
+void SetVGIF(PVIRTUAL_PROCESSOR_DATA VpData)
+{
+    //60h 9 VGIF value(0 每 Virtual interrupts are masked, 1 每 Virtual Interrupts are unmasked)
+    GetCurrentVmcbGuest02(VpData)->ControlArea.VIntr |= (1UL << 9);
+}

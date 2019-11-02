@@ -692,6 +692,18 @@ SvPrepareForVirtualization (
 
     // This feature allows STGI and CLGI to execute in Guest mode and control virtual interrupts in guest 
     // mode while still allowing physical interrupts to be intercepted by the hypervisor. 
+
+    //Offset Bit(s) Description
+    //60h 9 VGIF value(0 ¨C Virtual interrupts are masked, 1 ¨C Virtual Interrupts are unmasked)
+    //60h 25 AMD Virtual GIF enabled for this guest(0 - Disabled, 1 - Enabled)
+
+//     When a VMRUN is executed and VGIF is enabled, the processor uses bit 9 as the starting value of the
+//     virtual GIF.It then provides masking capability for when virtual interrupts are taken.STGI executed in
+//     the guest sets bit 9 of the VMCB offset 60h and allows a virtual interrupt to be taken.CLGI executed in
+//     the guest clears bit 9 of the VMCB offset 60h and causes the virtual interrupt to be masked.Bit 9 in the
+//     VMCB is also writeable by the hypervisor and loaded on VMRUN and saved on VMEXIT.
+//     The hypervisor can still use the STGI / SLGI intercept control in the VMCB.
+
     VpData->GuestVmcb.ControlArea.VIntr |= SVM_ENABLE_VIRTUAL_GIF;
 
     //
