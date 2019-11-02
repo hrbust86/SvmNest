@@ -280,6 +280,8 @@ SvHandleVmrunExForL1ToL2(
 		pVmcbGuest02va->StateSaveArea.Rax = pVmcbGuest12va->StateSaveArea.Rax;
 
         ENTER_GUEST_MODE(VpData->HostStackLayout.pProcessNestData->vcpu_vmx);
+        // Sets the global interrupt flag (GIF) to 1. 
+        SetVGIF(VpData);
     }
     else
     {
@@ -332,9 +334,9 @@ VOID SvHandleVmmcallNest(
         return; // return L1
     }
 
-    SaveGuestVmcb12FromGuestVmcb02(VpData, GuestContext);
-
-    LEAVE_GUEST_MODE(VmmpGetVcpuVmx(VpData));     // retrun L1 host
+//     SaveGuestVmcb12FromGuestVmcb02(VpData, GuestContext);
+//     LEAVE_GUEST_MODE(VmmpGetVcpuVmx(VpData));     // retrun L1 host
+    LeaveGuest(VpData, GuestContext);
 }
 
 void VmmpHandleVmCallHookSyscall(
@@ -402,9 +404,9 @@ VOID SvHandleCpuidForL2ToL1(
         return; // return L1
     }
 
-    SaveGuestVmcb12FromGuestVmcb02(VpData, GuestContext);
-
-    LEAVE_GUEST_MODE(VmmpGetVcpuVmx(VpData));     // retrun L1 host
+//     SaveGuestVmcb12FromGuestVmcb02(VpData, GuestContext);
+//     LEAVE_GUEST_MODE(VmmpGetVcpuVmx(VpData));     // retrun L1 host
+    LeaveGuest(VpData, GuestContext);
 }
 
 VOID
@@ -424,8 +426,9 @@ SvHandleMsrAccessNest(
     UINT32 InterceptMisc1 = GetCurrentVmcbGuest12(VpData)->ControlArea.InterceptMisc1;
     if ((InterceptMisc1 & SVM_INTERCEPT_MISC1_MSR_PROT) && CheckVmcb12MsrBit(VpData, GuestContext))
     {
-        SaveGuestVmcb12FromGuestVmcb02(VpData, GuestContext);
-        LEAVE_GUEST_MODE(VmmpGetVcpuVmx(VpData));     // retrun L1 host
+//         SaveGuestVmcb12FromGuestVmcb02(VpData, GuestContext);
+//         LEAVE_GUEST_MODE(VmmpGetVcpuVmx(VpData));     // retrun L1 host
+        LeaveGuest(VpData, GuestContext);
         return;
     }
     else
@@ -454,8 +457,9 @@ VOID SvHandleBreakPointExceptionNest(
     UINT32 InterceptException = pVmcbGuest12va->ControlArea.InterceptException;
     if (InterceptException &  (1UL << 3)) // need retrun L1 host
     {
-        SaveGuestVmcb12FromGuestVmcb02(VpData, GuestContext);
-        LEAVE_GUEST_MODE(VmmpGetVcpuVmx(VpData));     // retrun L1 host
+//         SaveGuestVmcb12FromGuestVmcb02(VpData, GuestContext);
+//         LEAVE_GUEST_MODE(VmmpGetVcpuVmx(VpData));     // retrun L1 host
+        LeaveGuest(VpData, GuestContext);
         return;
     }
     else // return L2

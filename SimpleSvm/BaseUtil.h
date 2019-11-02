@@ -31,3 +31,11 @@ VOID HandleMsrReadAndWrite(
 BOOLEAN CheckVmcb12MsrBit(
     _Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
     _Inout_ PGUEST_CONTEXT GuestContext);
+
+void ClearVGIF(PVIRTUAL_PROCESSOR_DATA VpData);
+
+void SetVGIF(PVIRTUAL_PROCESSOR_DATA VpData);
+
+void LeaveGuest(
+    _Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
+    _Inout_ PGUEST_CONTEXT GuestContext);

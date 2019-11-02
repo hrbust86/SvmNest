@@ -255,3 +255,13 @@ void SetVGIF(PVIRTUAL_PROCESSOR_DATA VpData)
     //60h 9 VGIF value(0 ¨C Virtual interrupts are masked, 1 ¨C Virtual Interrupts are unmasked)
     GetCurrentVmcbGuest02(VpData)->ControlArea.VIntr |= (1UL << 9);
 }
+
+void LeaveGuest(
+    _Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
+    _Inout_ PGUEST_CONTEXT GuestContext)
+{
+    SaveGuestVmcb12FromGuestVmcb02(VpData, GuestContext);
+    LEAVE_GUEST_MODE(VmmpGetVcpuVmx(VpData));
+    // Clears the global interrupt flag (GIF). While GIF is zero, all external interrupts are disabled. 
+    ClearVGIF(VpData);
+}
