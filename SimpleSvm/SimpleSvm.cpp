@@ -639,7 +639,7 @@ SvPrepareForVirtualization (
     // of a hooked address (where a breakpoint is set) to the corresponding
     // hook handler function with our hypervisor.
     //
-    VpData->GuestVmcb.ControlArea.InterceptException |= (1UL << 3);
+    //VpData->GuestVmcb.ControlArea.InterceptException |= (1UL << 3);
 
     //
     // Configure to trigger #VMEXIT with CPUID and VMRUN instructions. CPUID is
