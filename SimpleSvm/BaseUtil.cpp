@@ -351,7 +351,13 @@ void SimulateVmrun02SaveHostStateShadow(
 
     // host CR2 is not saved 
     //RFLAGS 
+    //RIP 
+    //RSP 
+    //RAX
+
     pVmcbHostStateShadow->StateSaveArea.Rflags = pVmcb->StateSaveArea.Rflags;
-
-
+    pVmcbHostStateShadow->StateSaveArea.Rip = pVmcb->StateSaveArea.Rip;
+    pVmcbHostStateShadow->StateSaveArea.Rsp = pVmcb->StateSaveArea.Rsp;
+    // "vmrun eax" of L1 host store in vmcbguest02.  except firstly it is in the vmcb01
+    pVmcbHostStateShadow->StateSaveArea.Rax = pVmcb->StateSaveArea.Rax; 
 }
