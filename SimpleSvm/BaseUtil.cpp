@@ -315,3 +315,43 @@ void LeaveGuest(
     SimulateReloadHostStateInVmcbGuest02(VpData, GuestContext);
     LEAVE_GUEST_MODE(VmmpGetVcpuVmx(VpData));
 }
+
+void SimulateVmrun02SaveHostStateShadow(
+    _Inout_ PVMCB pVmcb,
+    _Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
+    _Inout_ PGUEST_CONTEXT GuestContext)
+{
+    // save host state to physical memory indicated in the VM_HSAVE_PA MSR: 
+
+    PVMCB pVmcbHostStateShadow = &(VmmpGetVcpuVmx(VpData)->VmcbHostStateArea02Shadow);
+    //ES.sel 
+    //CS.sel 
+    //SS.sel
+    //DS.sel
+    pVmcbHostStateShadow->StateSaveArea.CsSelector = pVmcb->StateSaveArea.CsSelector;
+    pVmcbHostStateShadow->StateSaveArea.DsSelector = pVmcb->StateSaveArea.DsSelector;
+    pVmcbHostStateShadow->StateSaveArea.EsSelector = pVmcb->StateSaveArea.EsSelector;
+    pVmcbHostStateShadow->StateSaveArea.SsSelector = pVmcb->StateSaveArea.SsSelector;
+
+    //GDTR.{base,limit} 
+    //IDTR.{base,limit} 
+    pVmcbHostStateShadow->StateSaveArea.GdtrBase = pVmcb->StateSaveArea.GdtrBase;
+    pVmcbHostStateShadow->StateSaveArea.GdtrLimit = pVmcb->StateSaveArea.GdtrLimit;
+    pVmcbHostStateShadow->StateSaveArea.IdtrBase = pVmcb->StateSaveArea.IdtrBase;
+    pVmcbHostStateShadow->StateSaveArea.IdtrLimit = pVmcb->StateSaveArea.IdtrLimit;
+
+    //EFER 
+    //CR0 
+    //CR4 
+    //CR3
+    pVmcbHostStateShadow->StateSaveArea.Efer = pVmcb->StateSaveArea.Efer;
+    pVmcbHostStateShadow->StateSaveArea.Cr0 = pVmcb->StateSaveArea.Cr0;
+    pVmcbHostStateShadow->StateSaveArea.Cr4 = pVmcb->StateSaveArea.Cr4;
+    pVmcbHostStateShadow->StateSaveArea.Cr3 = pVmcb->StateSaveArea.Cr3;
+
+    // host CR2 is not saved 
+    //RFLAGS 
+    pVmcbHostStateShadow->StateSaveArea.Rflags = pVmcb->StateSaveArea.Rflags;
+
+
+}
