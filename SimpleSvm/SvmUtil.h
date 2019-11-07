@@ -27,30 +27,21 @@ extern "C" VOID NTAPI AsmSvmCall(_In_ ULONG_PTR hypercall_number,
 NTSTATUS UtilVmCall(HypercallNumber hypercall_number,
 	void *context);
 
-_IRQL_requires_same_
-VOID
-SvInjectGeneralProtectionException(
-	_Inout_ PVIRTUAL_PROCESSOR_DATA VpData
-	);
-
-VOID
-SvInjectGeneralProtectionExceptionVmcb02(
-    _Inout_ PVIRTUAL_PROCESSOR_DATA VpData
-);
-
-VOID
-SvInjectBPExceptionVmcb02(
-    _Inout_ PVIRTUAL_PROCESSOR_DATA VpData
-);
-
-VOID
-SvInjectBPExceptionVmcb01(
-    _Inout_ PVIRTUAL_PROCESSOR_DATA VpData
-);
-
 void UtilWriteMsr64(Msr msr, ULONG64 value);
 
 ULONG64 UtilReadMsr64(Msr msr);
+
+ULONG64 UtilPaFromVa(void *va);
+
+void *UtilVaFromPa(ULONG64 pa);
+
+VOID SetvCpuMode(PVIRTUAL_PROCESSOR_DATA pVpdata, CPU_MODE CpuMode);
+
+void SaveHostKernelGsBase(PVIRTUAL_PROCESSOR_DATA pVpdata);
+
+BOOLEAN CheckVmcb12MsrBit(
+    _Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
+    _Inout_ PGUEST_CONTEXT GuestContext);
 
 NTSTATUS UtilForEachProcessor(NTSTATUS(*callback_routine)(void *), void *context);
 
