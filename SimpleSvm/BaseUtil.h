@@ -49,7 +49,14 @@ void LeaveGuest(
     _Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
     _Inout_ PGUEST_CONTEXT GuestContext);
 
+///////////////////////////////////simulate vmrun
+
 void SimulateVmrun02SaveHostStateShadow(
+    _Inout_ PVMCB pVmcb,
+    _Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
+    _Inout_ PGUEST_CONTEXT GuestContext);
+
+void SimulateVmrun02LoadControlInfoToVmcbGuest02(
     _Inout_ PVMCB pVmcb,
     _Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
     _Inout_ PGUEST_CONTEXT GuestContext);

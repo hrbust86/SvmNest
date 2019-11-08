@@ -316,11 +316,14 @@ void LeaveGuest(
     LEAVE_GUEST_MODE(VmmpGetVcpuVmx(VpData));
 }
 
+///////////////////////////////////simulate vmrun
+
 void SimulateVmrun02SaveHostStateShadow(
     _Inout_ PVMCB pVmcb,
     _Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
     _Inout_ PGUEST_CONTEXT GuestContext)
 {
+    UNREFERENCED_PARAMETER(GuestContext);
     // save host state to physical memory indicated in the VM_HSAVE_PA MSR: 
 
     PVMCB pVmcbHostStateShadow = &(VmmpGetVcpuVmx(VpData)->VmcbHostStateArea02Shadow);
@@ -360,4 +363,44 @@ void SimulateVmrun02SaveHostStateShadow(
     pVmcbHostStateShadow->StateSaveArea.Rsp = pVmcb->StateSaveArea.Rsp;
     // "vmrun eax" of L1 host store in vmcbguest02.  except firstly it is in the vmcb01
     pVmcbHostStateShadow->StateSaveArea.Rax = pVmcb->StateSaveArea.Rax; 
+}
+
+void SimulateVmrun02LoadControlInfoToVmcbGuest02(
+    _Inout_ PVMCB pVmcb,
+    _Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
+    _Inout_ PGUEST_CONTEXT GuestContext)
+{
+    UNREFERENCED_PARAMETER(GuestContext);
+    // from the VMCB at physical address rAX, load control information: 
+    PVMCB pVmcbGuest02va = GetCurrentVmcbGuest02(VpData);
+    PVMCB pVmcbGuest01va = &VpData->GuestVmcb;
+    // intercept vector. use vmcb01 directly.
+    pVmcbGuest02va->ControlArea.InterceptCrRead = pVmcbGuest01va->ControlArea.InterceptCrRead;
+    pVmcbGuest02va->ControlArea.InterceptCrWrite = pVmcbGuest01va->ControlArea.InterceptCrWrite;
+    pVmcbGuest02va->ControlArea.InterceptDrRead = pVmcbGuest01va->ControlArea.InterceptDrRead;
+    pVmcbGuest02va->ControlArea.InterceptDrWrite = pVmcbGuest01va->ControlArea.InterceptDrWrite;
+    pVmcbGuest02va->ControlArea.InterceptException = pVmcbGuest01va->ControlArea.InterceptException;
+    pVmcbGuest02va->ControlArea.InterceptMisc1 = pVmcbGuest01va->ControlArea.InterceptMisc1;
+    pVmcbGuest02va->ControlArea.InterceptMisc2 = pVmcbGuest01va->ControlArea.InterceptMisc2;
+    // i think other need add
+    pVmcbGuest02va->ControlArea.MsrpmBasePa = pVmcbGuest01va->ControlArea.MsrpmBasePa;
+    pVmcbGuest02va->ControlArea.NpEnable = pVmcbGuest01va->ControlArea.NpEnable;
+    pVmcbGuest02va->ControlArea.NCr3 = pVmcbGuest01va->ControlArea.NCr3;
+    pVmcbGuest02va->ControlArea.LbrVirtualizationEnable = pVmcbGuest01va->ControlArea.LbrVirtualizationEnable;
+    
+    //  (v_irq, v_intr_*, v_tpr) in VIntr , so we can not give value to VIntr directly
+    pVmcbGuest02va->ControlArea.VIntr = pVmcb->ControlArea.VIntr;
+    pVmcbGuest02va->ControlArea.VIntr |= SVM_ENABLE_VIRTUAL_GIF; // need this flag in vmcb02
+
+    // TSC_OFFSET 
+    pVmcbGuest02va->ControlArea.TscOffset = pVmcb->ControlArea.TscOffset;
+
+    // interrupt control (v_irq, v_intr_*, v_tpr) not surpport temply.
+
+    // EVENTINJ field 
+    pVmcbGuest02va->ControlArea.EventInj = pVmcb->ControlArea.EventInj;
+
+    //  ASID
+    pVmcbGuest02va->ControlArea.GuestAsid = pVmcb->ControlArea.GuestAsid;
+
 }

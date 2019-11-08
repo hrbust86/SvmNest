@@ -43,6 +43,8 @@
 
 typedef struct _VMCB_CONTROL_AREA
 {
+// The VMCB is divided into two areas¡ªthe first one contains various control bits including the 
+// intercept vector and the second one contains saved guest state. 
     UINT16 InterceptCrRead;             // +0x000
     UINT16 InterceptCrWrite;            // +0x002
     UINT16 InterceptDrRead;             // +0x004
