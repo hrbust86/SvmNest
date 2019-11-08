@@ -194,7 +194,7 @@ VOID SimulateReloadHostStateInVmcbGuest02(_Inout_ PVIRTUAL_PROCESSOR_DATA VpData
 
 }
 
-VOID SaveGuestVmcb12FromGuestVmcb02(_Inout_ PVIRTUAL_PROCESSOR_DATA VpData, _Inout_ PGUEST_CONTEXT GuestContext)
+VOID SimulateSaveGuestStateIntoVmcbGuest12(_Inout_ PVIRTUAL_PROCESSOR_DATA VpData, _Inout_ PGUEST_CONTEXT GuestContext)
 {
     PVMCB pVmcbGuest02va = (PVMCB)UtilVaFromPa(VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_guest_02_pa);
     PVMCB pVmcbGuest12va = (PVMCB)UtilVaFromPa(VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_guest_12_pa);
@@ -311,7 +311,7 @@ void LeaveGuest(
 {
     // Clears the global interrupt flag (GIF). While GIF is zero, all external interrupts are disabled. 
     ClearVGIF(VpData);
-    SaveGuestVmcb12FromGuestVmcb02(VpData, GuestContext);
+    SimulateSaveGuestStateIntoVmcbGuest12(VpData, GuestContext);
     SimulateReloadHostStateInVmcbGuest02(VpData, GuestContext);
     LEAVE_GUEST_MODE(VmmpGetVcpuVmx(VpData));
 }

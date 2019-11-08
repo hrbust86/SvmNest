@@ -30,7 +30,7 @@ SvInjectBPExceptionVmcb01(
     _Inout_ PVIRTUAL_PROCESSOR_DATA VpData
 );
 
-VOID SaveGuestVmcb12FromGuestVmcb02(_Inout_ PVIRTUAL_PROCESSOR_DATA VpData, 
+VOID SimulateSaveGuestStateIntoVmcbGuest12(_Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
 _Inout_ PGUEST_CONTEXT GuestContext);
 
 VMCB * GetCurrentVmcbGuest12(PVIRTUAL_PROCESSOR_DATA pVpdata);
