@@ -171,28 +171,67 @@ SvInjectBPExceptionVmcb01(
 
 ///////////////////////////////////////////
 
-VOID SimulateReloadHostStateInVmcbGuest02(_Inout_ PVIRTUAL_PROCESSOR_DATA VpData, _Inout_ PGUEST_CONTEXT GuestContext)
+VMCB * GetCurrentVmcbGuest12(PVIRTUAL_PROCESSOR_DATA pVpdata)
 {
-    //reload host state
-    PVMCB pVmcbGuest12va = GetCurrentVmcbGuest12(VpData);
-    PVMCB pVmcbGuest02va = GetCurrentVmcbGuest02(VpData);
-
-    GuestContext->VpRegs->Rax = VmmpGetVcpuVmx(VpData)->vmcb_guest_12_pa; //  L2 rax, vmcb12pa
-    pVmcbGuest02va->StateSaveArea.Rsp = VpData->GuestVmcb.StateSaveArea.Rsp; // L2 host rsp 
-    pVmcbGuest02va->StateSaveArea.Rip = VpData->GuestVmcb.ControlArea.NRip; // L2 host ip 
-
-    // the Rflags is in vmcb01 when ret to L1 host first , but it is in vmcb02 later on. i think that is all right
-    //pVmcbGuest02va->StateSaveArea.Rflags = VpData->GuestVmcb.StateSaveArea.Rflags; // not right , but can not find
-
-    SvDebugPrint("[SaveGuestVmcb12FromGuestVmcb02] pVmcbGuest12va->StateSaveArea.Rax  : %I64X \r\n", pVmcbGuest12va->StateSaveArea.Rax);
-    SvDebugPrint("[SaveGuestVmcb12FromGuestVmcb02] pVmcbGuest12va->StateSaveArea.Rsp  : %I64X \r\n", pVmcbGuest12va->StateSaveArea.Rsp);
-    SvDebugPrint("[SaveGuestVmcb12FromGuestVmcb02] pVmcbGuest12va->StateSaveArea.Rip  : %I64X \r\n", pVmcbGuest12va->StateSaveArea.Rip);
-    SvDebugPrint("[SaveGuestVmcb12FromGuestVmcb02] pVmcbGuest12va->ControlArea.NRip  : %I64X \r\n", pVmcbGuest12va->ControlArea.NRip);
-    SvDebugPrint("[SaveGuestVmcb12FromGuestVmcb02] GuestContext->VpRegs->Rax  : %I64X \r\n", GuestContext->VpRegs->Rax);
-    SvDebugPrint("[SaveGuestVmcb12FromGuestVmcb02] pVmcbGuest02va->StateSaveArea.Rsp  : %I64X \r\n", pVmcbGuest02va->StateSaveArea.Rsp);
-    SvDebugPrint("[SaveGuestVmcb12FromGuestVmcb02] pVmcbGuest02va->StateSaveArea.Rip  : %I64X \r\n", pVmcbGuest02va->StateSaveArea.Rip);
-
+    PVMCB pVmcbGuest12va = (PVMCB)UtilVaFromPa(VmmpGetVcpuVmx(pVpdata)->vmcb_guest_12_pa);
+    return pVmcbGuest12va;
 }
+
+VMCB * GetCurrentVmcbGuest02(PVIRTUAL_PROCESSOR_DATA pVpdata)
+{
+    PVMCB pVmcbGuest02va = (PVMCB)UtilVaFromPa(VmmpGetVcpuVmx(pVpdata)->vmcb_guest_02_pa);
+    return pVmcbGuest02va;
+}
+
+VOID HandleMsrReadAndWrite(
+_Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
+    _Inout_ PGUEST_CONTEXT GuestContext)
+{
+    PVMCB pVmcbGuest02va = GetCurrentVmcbGuest02(VpData);
+    LARGE_INTEGER MsrValue = { 0 };
+    if (0 == pVmcbGuest02va->ControlArea.ExitInfo1) // read
+    {
+        Msr MsrNum = (Msr)GuestContext->VpRegs->Rcx;
+        MsrValue.QuadPart = UtilReadMsr64(MsrNum); // read from host
+
+        GuestContext->VpRegs->Rax = MsrValue.LowPart;
+        GuestContext->VpRegs->Rdx = MsrValue.HighPart;
+    }
+    else
+    {
+        Msr MsrNum = (Msr)GuestContext->VpRegs->Rcx;
+        MsrValue.LowPart = (ULONG)GuestContext->VpRegs->Rax;
+        MsrValue.HighPart = (ULONG)GuestContext->VpRegs->Rdx;
+        UtilWriteMsr64(MsrNum, MsrValue.QuadPart);
+    }
+}
+
+void ClearVGIF(PVIRTUAL_PROCESSOR_DATA VpData)
+{
+    //60h 9 VGIF value(0 每 Virtual interrupts are masked, 1 每 Virtual Interrupts are unmasked)
+    UINT64 tmp = ~GetCurrentVmcbGuest02(VpData)->ControlArea.VIntr;
+    tmp |= (1UL << 9);
+    GetCurrentVmcbGuest02(VpData)->ControlArea.VIntr = ~tmp;
+}
+
+void SetVGIF(PVIRTUAL_PROCESSOR_DATA VpData)
+{
+    //60h 9 VGIF value(0 每 Virtual interrupts are masked, 1 每 Virtual Interrupts are unmasked)
+    GetCurrentVmcbGuest02(VpData)->ControlArea.VIntr |= (1UL << 9);
+}
+
+void LeaveGuest(
+    _Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
+    _Inout_ PGUEST_CONTEXT GuestContext)
+{
+    // Clears the global interrupt flag (GIF). While GIF is zero, all external interrupts are disabled. 
+    ClearVGIF(VpData);
+    SimulateSaveGuestStateIntoVmcbGuest12(VpData, GuestContext);
+    SimulateReloadHostStateInToVmcbGuest02(VpData, GuestContext);
+    LEAVE_GUEST_MODE(VmmpGetVcpuVmx(VpData));
+}
+
+///////////////////////////////////simulate VMEXIT
 
 VOID SimulateSaveGuestStateIntoVmcbGuest12(_Inout_ PVIRTUAL_PROCESSOR_DATA VpData, _Inout_ PGUEST_CONTEXT GuestContext)
 {
@@ -256,64 +295,27 @@ VOID SimulateSaveGuestStateIntoVmcbGuest12(_Inout_ PVIRTUAL_PROCESSOR_DATA VpDat
 
 }
 
-VMCB * GetCurrentVmcbGuest12(PVIRTUAL_PROCESSOR_DATA pVpdata)
+VOID SimulateReloadHostStateInToVmcbGuest02(_Inout_ PVIRTUAL_PROCESSOR_DATA VpData, _Inout_ PGUEST_CONTEXT GuestContext)
 {
-    PVMCB pVmcbGuest12va = (PVMCB)UtilVaFromPa(VmmpGetVcpuVmx(pVpdata)->vmcb_guest_12_pa);
-    return pVmcbGuest12va;
-}
-
-VMCB * GetCurrentVmcbGuest02(PVIRTUAL_PROCESSOR_DATA pVpdata)
-{
-    PVMCB pVmcbGuest02va = (PVMCB)UtilVaFromPa(VmmpGetVcpuVmx(pVpdata)->vmcb_guest_02_pa);
-    return pVmcbGuest02va;
-}
-
-VOID HandleMsrReadAndWrite(
-_Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
-    _Inout_ PGUEST_CONTEXT GuestContext)
-{
+    //reload host state
+    PVMCB pVmcbGuest12va = GetCurrentVmcbGuest12(VpData);
     PVMCB pVmcbGuest02va = GetCurrentVmcbGuest02(VpData);
-    LARGE_INTEGER MsrValue = { 0 };
-    if (0 == pVmcbGuest02va->ControlArea.ExitInfo1) // read
-    {
-        Msr MsrNum = (Msr)GuestContext->VpRegs->Rcx;
-        MsrValue.QuadPart = UtilReadMsr64(MsrNum); // read from host
 
-        GuestContext->VpRegs->Rax = MsrValue.LowPart;
-        GuestContext->VpRegs->Rdx = MsrValue.HighPart;
-    }
-    else
-    {
-        Msr MsrNum = (Msr)GuestContext->VpRegs->Rcx;
-        MsrValue.LowPart = (ULONG)GuestContext->VpRegs->Rax;
-        MsrValue.HighPart = (ULONG)GuestContext->VpRegs->Rdx;
-        UtilWriteMsr64(MsrNum, MsrValue.QuadPart);
-    }
-}
+    GuestContext->VpRegs->Rax = VmmpGetVcpuVmx(VpData)->vmcb_guest_12_pa; //  L2 rax, vmcb12pa
+    pVmcbGuest02va->StateSaveArea.Rsp = VpData->GuestVmcb.StateSaveArea.Rsp; // L2 host rsp 
+    pVmcbGuest02va->StateSaveArea.Rip = VpData->GuestVmcb.ControlArea.NRip; // L2 host ip 
 
-void ClearVGIF(PVIRTUAL_PROCESSOR_DATA VpData)
-{
-    //60h 9 VGIF value(0 每 Virtual interrupts are masked, 1 每 Virtual Interrupts are unmasked)
-    UINT64 tmp = ~GetCurrentVmcbGuest02(VpData)->ControlArea.VIntr;
-    tmp |= (1UL << 9);
-    GetCurrentVmcbGuest02(VpData)->ControlArea.VIntr = ~tmp;
-}
+    // the Rflags is in vmcb01 when ret to L1 host first , but it is in vmcb02 later on. i think that is all right
+    //pVmcbGuest02va->StateSaveArea.Rflags = VpData->GuestVmcb.StateSaveArea.Rflags; // not right , but can not find
 
-void SetVGIF(PVIRTUAL_PROCESSOR_DATA VpData)
-{
-    //60h 9 VGIF value(0 每 Virtual interrupts are masked, 1 每 Virtual Interrupts are unmasked)
-    GetCurrentVmcbGuest02(VpData)->ControlArea.VIntr |= (1UL << 9);
-}
+    SvDebugPrint("[SaveGuestVmcb12FromGuestVmcb02] pVmcbGuest12va->StateSaveArea.Rax  : %I64X \r\n", pVmcbGuest12va->StateSaveArea.Rax);
+    SvDebugPrint("[SaveGuestVmcb12FromGuestVmcb02] pVmcbGuest12va->StateSaveArea.Rsp  : %I64X \r\n", pVmcbGuest12va->StateSaveArea.Rsp);
+    SvDebugPrint("[SaveGuestVmcb12FromGuestVmcb02] pVmcbGuest12va->StateSaveArea.Rip  : %I64X \r\n", pVmcbGuest12va->StateSaveArea.Rip);
+    SvDebugPrint("[SaveGuestVmcb12FromGuestVmcb02] pVmcbGuest12va->ControlArea.NRip  : %I64X \r\n", pVmcbGuest12va->ControlArea.NRip);
+    SvDebugPrint("[SaveGuestVmcb12FromGuestVmcb02] GuestContext->VpRegs->Rax  : %I64X \r\n", GuestContext->VpRegs->Rax);
+    SvDebugPrint("[SaveGuestVmcb12FromGuestVmcb02] pVmcbGuest02va->StateSaveArea.Rsp  : %I64X \r\n", pVmcbGuest02va->StateSaveArea.Rsp);
+    SvDebugPrint("[SaveGuestVmcb12FromGuestVmcb02] pVmcbGuest02va->StateSaveArea.Rip  : %I64X \r\n", pVmcbGuest02va->StateSaveArea.Rip);
 
-void LeaveGuest(
-    _Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
-    _Inout_ PGUEST_CONTEXT GuestContext)
-{
-    // Clears the global interrupt flag (GIF). While GIF is zero, all external interrupts are disabled. 
-    ClearVGIF(VpData);
-    SimulateSaveGuestStateIntoVmcbGuest12(VpData, GuestContext);
-    SimulateReloadHostStateInVmcbGuest02(VpData, GuestContext);
-    LEAVE_GUEST_MODE(VmmpGetVcpuVmx(VpData));
 }
 
 ///////////////////////////////////simulate vmrun

@@ -30,9 +30,6 @@ SvInjectBPExceptionVmcb01(
     _Inout_ PVIRTUAL_PROCESSOR_DATA VpData
 );
 
-VOID SimulateSaveGuestStateIntoVmcbGuest12(_Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
-_Inout_ PGUEST_CONTEXT GuestContext);
-
 VMCB * GetCurrentVmcbGuest12(PVIRTUAL_PROCESSOR_DATA pVpdata);
 
 VMCB * GetCurrentVmcbGuest02(PVIRTUAL_PROCESSOR_DATA pVpdata);
@@ -46,6 +43,16 @@ void ClearVGIF(PVIRTUAL_PROCESSOR_DATA VpData);
 void SetVGIF(PVIRTUAL_PROCESSOR_DATA VpData);
 
 void LeaveGuest(
+    _Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
+    _Inout_ PGUEST_CONTEXT GuestContext);
+
+/////////////////////////////////// simulate VMEXIT
+
+VOID SimulateReloadHostStateInToVmcbGuest02(
+    _Inout_ PVIRTUAL_PROCESSOR_DATA VpData, 
+    _Inout_ PGUEST_CONTEXT GuestContext);
+
+VOID SimulateSaveGuestStateIntoVmcbGuest12(
     _Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
     _Inout_ PGUEST_CONTEXT GuestContext);
 
