@@ -60,3 +60,7 @@ void SimulateVmrun02LoadControlInfoToVmcbGuest02(
     _Inout_ PVMCB pVmcb,
     _Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
     _Inout_ PGUEST_CONTEXT GuestContext);
+
+void SimulateVmrun02LoadGuestStateFromVmcbGuest12(
+    _Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
+    _Inout_ PGUEST_CONTEXT GuestContext);
