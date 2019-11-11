@@ -326,13 +326,52 @@ VOID SimulateReloadHostStateInToVmcbGuest02(_Inout_ PVIRTUAL_PROCESSOR_DATA VpDa
     //reload host state
     PVMCB pVmcbGuest12va = GetCurrentVmcbGuest12(VpData);
     PVMCB pVmcbGuest02va = GetCurrentVmcbGuest02(VpData);
+    PVMCB pVmcbHostStateShadow = &(VmmpGetVcpuVmx(VpData)->VmcbHostStateArea02Shadow);
 
-    GuestContext->VpRegs->Rax = VmmpGetVcpuVmx(VpData)->vmcb_guest_12_pa; //  L2 rax, vmcb12pa
-    pVmcbGuest02va->StateSaveArea.Rsp = VpData->GuestVmcb.StateSaveArea.Rsp; // L2 host rsp 
-    pVmcbGuest02va->StateSaveArea.Rip = VpData->GuestVmcb.ControlArea.NRip; // L2 host ip 
+    //GDTR.{base, limit} 
+    //IDTR.{base, limit}
+    pVmcbGuest02va->StateSaveArea.GdtrBase = pVmcbHostStateShadow->StateSaveArea.GdtrBase;
+    pVmcbGuest02va->StateSaveArea.GdtrLimit = pVmcbHostStateShadow->StateSaveArea.GdtrLimit;
+    pVmcbGuest02va->StateSaveArea.IdtrBase = pVmcbHostStateShadow->StateSaveArea.IdtrBase;
+    pVmcbGuest02va->StateSaveArea.IdtrLimit = pVmcbHostStateShadow->StateSaveArea.IdtrLimit;
 
-    // the Rflags is in vmcb01 when ret to L1 host first , but it is in vmcb02 later on. i think that is all right
-    //pVmcbGuest02va->StateSaveArea.Rflags = VpData->GuestVmcb.StateSaveArea.Rflags; // not right , but can not find
+    // EFER
+    pVmcbGuest02va->StateSaveArea.Efer = pVmcbHostStateShadow->StateSaveArea.Efer;
+
+    // CR0
+    pVmcbGuest02va->StateSaveArea.Cr0 = pVmcbHostStateShadow->StateSaveArea.Cr0;
+
+    // CR4
+    pVmcbGuest02va->StateSaveArea.Cr4 = pVmcbHostStateShadow->StateSaveArea.Cr4;
+
+    // CR3
+    pVmcbGuest02va->StateSaveArea.Cr3 = pVmcbHostStateShadow->StateSaveArea.Cr3;
+
+    // RFLAGS
+    pVmcbGuest02va->StateSaveArea.Rflags = pVmcbHostStateShadow->StateSaveArea.Rflags;
+
+    // RIP
+    pVmcbGuest02va->StateSaveArea.Rip = pVmcbHostStateShadow->StateSaveArea.Rip + 3; // L2 host ip warning the address calc
+
+    // RSP
+    pVmcbGuest02va->StateSaveArea.Rsp = pVmcbHostStateShadow->StateSaveArea.Rsp; // L2 host rsp 
+
+    // RAX
+    GuestContext->VpRegs->Rax = pVmcbHostStateShadow->StateSaveArea.Rax; //  L2 rax, vmcb12pa
+
+    // DR7 = ¡°all disabled¡± 
+
+    // CPL = 0 
+    pVmcbGuest02va->StateSaveArea.Cpl = 0;
+
+    //ES.sel; reload segment descriptor from GDT 
+    //CS.sel; reload segment descriptor from GDT 
+    //SS.sel; reload segment descriptor from GDT 
+    //DS.sel; reload segment descriptor from GDT
+    pVmcbGuest02va->StateSaveArea.CsSelector = pVmcbHostStateShadow->StateSaveArea.CsSelector;
+    pVmcbGuest02va->StateSaveArea.DsSelector = pVmcbHostStateShadow->StateSaveArea.DsSelector;
+    pVmcbGuest02va->StateSaveArea.EsSelector = pVmcbHostStateShadow->StateSaveArea.EsSelector;
+    pVmcbGuest02va->StateSaveArea.SsSelector = pVmcbHostStateShadow->StateSaveArea.SsSelector;
 
     SvDebugPrint("[SaveGuestVmcb12FromGuestVmcb02] pVmcbGuest12va->StateSaveArea.Rax  : %I64X \r\n", pVmcbGuest12va->StateSaveArea.Rax);
     SvDebugPrint("[SaveGuestVmcb12FromGuestVmcb02] pVmcbGuest12va->StateSaveArea.Rsp  : %I64X \r\n", pVmcbGuest12va->StateSaveArea.Rsp);
