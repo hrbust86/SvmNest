@@ -238,26 +238,16 @@ VOID SimulateSaveGuestStateIntoVmcbGuest12(_Inout_ PVIRTUAL_PROCESSOR_DATA VpDat
     PVMCB pVmcbGuest02va = (PVMCB)UtilVaFromPa(VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_guest_02_pa);
     PVMCB pVmcbGuest12va = (PVMCB)UtilVaFromPa(VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_guest_12_pa);
 
-    pVmcbGuest12va->StateSaveArea.Rax = GuestContext->VpRegs->Rax; // save L2 rax => vmcb12 in L2
-    pVmcbGuest12va->StateSaveArea.Rsp = pVmcbGuest02va->StateSaveArea.Rsp; // save L2 guest rsp=> vmcb12
-    pVmcbGuest12va->StateSaveArea.Rflags = pVmcbGuest02va->StateSaveArea.Rflags; // save L2 guest rflags => vmcb12
-    pVmcbGuest12va->StateSaveArea.Rip = pVmcbGuest02va->StateSaveArea.Rip; // save L2 rip => vmcb12
-    pVmcbGuest12va->ControlArea.NRip = pVmcbGuest02va->ControlArea.NRip; // save L2 next rip => vmcb12
-
-    pVmcbGuest12va->ControlArea.ExitCode = pVmcbGuest02va->ControlArea.ExitCode;
-    pVmcbGuest12va->ControlArea.ExitInfo1 = pVmcbGuest02va->ControlArea.ExitInfo1;
-    pVmcbGuest12va->ControlArea.ExitInfo2 = pVmcbGuest02va->ControlArea.ExitInfo2;
-    pVmcbGuest12va->ControlArea.ExitIntInfo = pVmcbGuest02va->ControlArea.ExitIntInfo;
-    pVmcbGuest12va->ControlArea.EventInj = pVmcbGuest02va->ControlArea.EventInj;
-    pVmcbGuest12va->StateSaveArea.Cpl = pVmcbGuest02va->StateSaveArea.Cpl;
-    pVmcbGuest12va->StateSaveArea.LStar = pVmcbGuest02va->StateSaveArea.LStar;
-
     // simulate save guest state to VMCB12: 
 
     // ES.{base,limit,attr,sel} 
     // CS.{base,limit,attr,sel} 
     // SS.{base,limit,attr,sel} 
     // DS.{base,limit,attr,sel} 
+    pVmcbGuest12va->StateSaveArea.CsBase = pVmcbGuest02va->StateSaveArea.CsBase;
+    pVmcbGuest12va->StateSaveArea.DsBase = pVmcbGuest02va->StateSaveArea.DsBase;
+    pVmcbGuest12va->StateSaveArea.EsBase = pVmcbGuest02va->StateSaveArea.EsBase;
+    pVmcbGuest12va->StateSaveArea.SsBase = pVmcbGuest02va->StateSaveArea.SsBase;
     pVmcbGuest12va->StateSaveArea.CsLimit = pVmcbGuest02va->StateSaveArea.CsLimit;
     pVmcbGuest12va->StateSaveArea.DsLimit = pVmcbGuest02va->StateSaveArea.DsLimit;
     pVmcbGuest12va->StateSaveArea.EsLimit = pVmcbGuest02va->StateSaveArea.EsLimit;
@@ -287,11 +277,47 @@ VOID SimulateSaveGuestStateIntoVmcbGuest12(_Inout_ PVIRTUAL_PROCESSOR_DATA VpDat
     pVmcbGuest12va->StateSaveArea.Cr0 = pVmcbGuest02va->StateSaveArea.Cr0;
 
     //if (nested paging enabled)    gPAT
-    pVmcbGuest12va->StateSaveArea.GPat = pVmcbGuest02va->StateSaveArea.GPat;
+    if (pVmcbGuest12va->ControlArea.NpEnable)
+    {
+        pVmcbGuest12va->StateSaveArea.GPat = pVmcbGuest02va->StateSaveArea.GPat;
+    }
+
+    // RFLAGS
+    pVmcbGuest12va->StateSaveArea.Rflags = pVmcbGuest02va->StateSaveArea.Rflags; // save L2 guest rflags => vmcb12
+
+    // RIP
+    pVmcbGuest12va->StateSaveArea.Rip = pVmcbGuest02va->StateSaveArea.Rip; // save L2 rip => vmcb12
+
+    // RSP
+    pVmcbGuest12va->StateSaveArea.Rsp = pVmcbGuest02va->StateSaveArea.Rsp; // save L2 guest rsp=> vmcb12
+
+    // RAX
+    pVmcbGuest12va->StateSaveArea.Rax = pVmcbGuest02va->StateSaveArea.Rax; // save L2 rax => vmcb12 in L2
 
     // DR7 DR6 
     pVmcbGuest12va->StateSaveArea.Dr7 = pVmcbGuest02va->StateSaveArea.Dr7;
     pVmcbGuest12va->StateSaveArea.Dr6 = pVmcbGuest02va->StateSaveArea.Dr6;
+
+    // CPL
+    pVmcbGuest12va->StateSaveArea.Cpl = pVmcbGuest02va->StateSaveArea.Cpl;
+
+    // INTERRUPT_SHADOW
+    pVmcbGuest12va->ControlArea.InterruptShadow = pVmcbGuest02va->ControlArea.InterruptShadow;
+
+    // V_IRQ, V_TPR
+    // EXITCODE EXITINFO1 EXITINFO2 EXITINTINFO 
+
+    pVmcbGuest12va->ControlArea.ExitCode = pVmcbGuest02va->ControlArea.ExitCode;
+    pVmcbGuest12va->ControlArea.ExitInfo1 = pVmcbGuest02va->ControlArea.ExitInfo1;
+    pVmcbGuest12va->ControlArea.ExitInfo2 = pVmcbGuest02va->ControlArea.ExitInfo2;
+    pVmcbGuest12va->ControlArea.ExitIntInfo = pVmcbGuest02va->ControlArea.ExitIntInfo;
+    
+    // clear EVENTINJ field in VMCB
+    pVmcbGuest12va->ControlArea.EventInj = 0;
+
+    // others
+    pVmcbGuest12va->ControlArea.NRip = pVmcbGuest02va->ControlArea.NRip; // save L2 next rip => vmcb12
+    pVmcbGuest12va->StateSaveArea.LStar = pVmcbGuest02va->StateSaveArea.LStar;
 
 }
 
