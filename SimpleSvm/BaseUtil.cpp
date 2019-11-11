@@ -446,6 +446,10 @@ void SimulateVmrun02LoadGuestStateFromVmcbGuest12(
     //CS.{base, limit, attr, sel}             
     //SS.{base, limit, attr, sel}             
     //DS.{base, limit, attr, sel}
+    pVmcbGuest02va->StateSaveArea.CsBase = pVmcbGuest12va->StateSaveArea.CsBase;
+    pVmcbGuest02va->StateSaveArea.DsBase = pVmcbGuest12va->StateSaveArea.DsBase;
+    pVmcbGuest02va->StateSaveArea.EsBase = pVmcbGuest12va->StateSaveArea.EsBase;
+    pVmcbGuest02va->StateSaveArea.SsBase = pVmcbGuest12va->StateSaveArea.SsBase;
     pVmcbGuest02va->StateSaveArea.CsLimit = pVmcbGuest12va->StateSaveArea.CsLimit;
     pVmcbGuest02va->StateSaveArea.DsLimit = pVmcbGuest12va->StateSaveArea.DsLimit;
     pVmcbGuest02va->StateSaveArea.EsLimit = pVmcbGuest12va->StateSaveArea.EsLimit;
