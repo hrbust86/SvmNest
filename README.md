@@ -12,7 +12,7 @@ the AMD version of Intel VT-x, with Nested Page Tables (NPT) from a windows driv
 This frame only simulate four event : (VMEXIT_CPUID, VMEXIT_MSR, VMEXIT_VMRUN, VMEXIT_VMMCALL).
 This project could simulate SimpleSvmHookMsr in my git. you can learn SvmNest by SimpleSvmHookMsr.
 if you want more event to carry, you should code just like my "SvHandleMsrAccessNest".
-but if you want more advance feature, you should fix "SaveGuestVmcb12FromGuestVmcb02" and "SvHandleVmrunExForL1ToL2".
+
 
 Any questions could send a email to "hrbust86@126.com"
 
