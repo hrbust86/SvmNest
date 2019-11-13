@@ -288,15 +288,17 @@ SvHandleVmrunExForL1ToL2(
 
     if ( VMX_MODE::RootMode == VmxGetVmxMode(VmmpGetVcpuVmx(VpData)))
     {
-        PVMCB pVmcbGuest02va = (PVMCB)UtilVaFromPa(VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_guest_02_pa);
-        PVMCB pVmcbGuest12va = (PVMCB)UtilVaFromPa(VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_guest_12_pa);
-        pVmcbGuest02va->StateSaveArea.Rflags = pVmcbGuest12va->StateSaveArea.Rflags;
-        pVmcbGuest02va->StateSaveArea.Rsp = pVmcbGuest12va->StateSaveArea.Rsp;
-        pVmcbGuest02va->StateSaveArea.Rip = pVmcbGuest12va->StateSaveArea.Rip;
-        pVmcbGuest02va->StateSaveArea.LStar = pVmcbGuest12va->StateSaveArea.LStar;
-		GuestContext->VpRegs->Rax = pVmcbGuest12va->StateSaveArea.Rax;
-		pVmcbGuest02va->StateSaveArea.Rax = pVmcbGuest12va->StateSaveArea.Rax;
-
+         PVMCB pVmcbGuest02va = (PVMCB)UtilVaFromPa(VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_guest_02_pa);
+         PVMCB pVmcbGuest12va = (PVMCB)UtilVaFromPa(VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_guest_12_pa);
+//         pVmcbGuest02va->StateSaveArea.Rflags = pVmcbGuest12va->StateSaveArea.Rflags;
+//         pVmcbGuest02va->StateSaveArea.Rsp = pVmcbGuest12va->StateSaveArea.Rsp;
+//         pVmcbGuest02va->StateSaveArea.Rip = pVmcbGuest12va->StateSaveArea.Rip;
+//         pVmcbGuest02va->StateSaveArea.LStar = pVmcbGuest12va->StateSaveArea.LStar;
+// 		pVmcbGuest02va->StateSaveArea.Rax = pVmcbGuest12va->StateSaveArea.Rax;
+        SimulateVmrun02SaveHostStateShadow(pVmcbGuest02va, VpData, GuestContext);
+        SimulateVmrun02LoadControlInfoToVmcbGuest02(pVmcbGuest12va, VpData, GuestContext);
+        SimulateVmrun02LoadGuestStateFromVmcbGuest12(VpData, GuestContext);
+        GuestContext->VpRegs->Rax = pVmcbGuest12va->StateSaveArea.Rax;
         ENTER_GUEST_MODE(VpData->HostStackLayout.pProcessNestData->vcpu_vmx);
         // Sets the global interrupt flag (GIF) to 1. 
         SetVGIF(VpData);
