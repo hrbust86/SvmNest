@@ -90,6 +90,17 @@ VCPUVMX* VmmpGetVcpuVmx(PVIRTUAL_PROCESSOR_DATA pVpdata)
     return pVpdata->HostStackLayout.pProcessNestData->vcpu_vmx;
 }
 
+void DumpVmcb(PVIRTUAL_PROCESSOR_DATA VpData)
+{
+    PVMCB pVmcbGuest12va = GetCurrentVmcbGuest12(VpData);
+    PVMCB pVmcbGuest02va = GetCurrentVmcbGuest02(VpData);
+    PVMCB pVmcbHostStateShadow = &(VmmpGetVcpuVmx(VpData)->VmcbHostStateArea02Shadow);
+
+    SvDebugPrint("[DumpVmcb] pVmcbGuest12va->StateSaveArea.GsBase  : %I64X \r\n", pVmcbGuest12va->StateSaveArea.GsBase);
+    SvDebugPrint("[DumpVmcb] pVmcbGuest12va->StateSaveArea.KernelGsBase  : %I64X \r\n", pVmcbGuest12va->StateSaveArea.KernelGsBase);
+
+}
+
 /*!
 @brief          Injects #GP with 0 of error code.
 
@@ -229,6 +240,8 @@ void LeaveGuest(
     SimulateSaveGuestStateIntoVmcbGuest12(VpData, GuestContext);
     SimulateReloadHostStateInToVmcbGuest02(VpData, GuestContext);
     LEAVE_GUEST_MODE(VmmpGetVcpuVmx(VpData));
+    SvDebugPrint("[LeaveGuest]");
+    DumpVmcb(VpData);
 }
 
 ///////////////////////////////////simulate VMEXIT
@@ -391,14 +404,6 @@ VOID SimulateReloadHostStateInToVmcbGuest02(_Inout_ PVIRTUAL_PROCESSOR_DATA VpDa
 
     // gskernelbase
     pVmcbGuest02va->StateSaveArea.KernelGsBase = pVmcbHostStateShadow->StateSaveArea.KernelGsBase;
-
-    SvDebugPrint("[SaveGuestVmcb12FromGuestVmcb02] pVmcbGuest12va->StateSaveArea.Rax  : %I64X \r\n", pVmcbGuest12va->StateSaveArea.Rax);
-    SvDebugPrint("[SaveGuestVmcb12FromGuestVmcb02] pVmcbGuest12va->StateSaveArea.Rsp  : %I64X \r\n", pVmcbGuest12va->StateSaveArea.Rsp);
-    SvDebugPrint("[SaveGuestVmcb12FromGuestVmcb02] pVmcbGuest12va->StateSaveArea.Rip  : %I64X \r\n", pVmcbGuest12va->StateSaveArea.Rip);
-    SvDebugPrint("[SaveGuestVmcb12FromGuestVmcb02] pVmcbGuest12va->ControlArea.NRip  : %I64X \r\n", pVmcbGuest12va->ControlArea.NRip);
-    SvDebugPrint("[SaveGuestVmcb12FromGuestVmcb02] GuestContext->VpRegs->Rax  : %I64X \r\n", GuestContext->VpRegs->Rax);
-    SvDebugPrint("[SaveGuestVmcb12FromGuestVmcb02] pVmcbGuest02va->StateSaveArea.Rsp  : %I64X \r\n", pVmcbGuest02va->StateSaveArea.Rsp);
-    SvDebugPrint("[SaveGuestVmcb12FromGuestVmcb02] pVmcbGuest02va->StateSaveArea.Rip  : %I64X \r\n", pVmcbGuest02va->StateSaveArea.Rip);
 
 }
 
