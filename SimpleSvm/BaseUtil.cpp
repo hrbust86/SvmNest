@@ -96,6 +96,9 @@ void DumpVmcb(PVIRTUAL_PROCESSOR_DATA VpData)
     PVMCB pVmcbGuest02va = GetCurrentVmcbGuest02(VpData);
     PVMCB pVmcbHostStateShadow = &(VmmpGetVcpuVmx(VpData)->VmcbHostStateArea02Shadow);
 
+    UNREFERENCED_PARAMETER(pVmcbGuest02va);
+    UNREFERENCED_PARAMETER(pVmcbHostStateShadow);
+
     SvDebugPrint("[DumpVmcb] pVmcbGuest12va->StateSaveArea.GsBase  : %I64X \r\n", pVmcbGuest12va->StateSaveArea.GsBase);
     SvDebugPrint("[DumpVmcb] pVmcbGuest12va->StateSaveArea.KernelGsBase  : %I64X \r\n", pVmcbGuest12va->StateSaveArea.KernelGsBase);
 
@@ -341,6 +344,8 @@ VOID SimulateReloadHostStateInToVmcbGuest02(_Inout_ PVIRTUAL_PROCESSOR_DATA VpDa
     PVMCB pVmcbGuest12va = GetCurrentVmcbGuest12(VpData);
     PVMCB pVmcbGuest02va = GetCurrentVmcbGuest02(VpData);
     PVMCB pVmcbHostStateShadow = &(VmmpGetVcpuVmx(VpData)->VmcbHostStateArea02Shadow);
+
+    UNREFERENCED_PARAMETER(pVmcbGuest12va);
 
     //GDTR.{base, limit} 
     //IDTR.{base, limit}
