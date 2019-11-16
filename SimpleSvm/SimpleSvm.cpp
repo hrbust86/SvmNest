@@ -423,6 +423,9 @@ SvHandleVmExit (
 		case VMEXIT_VMRUN:
             SvHandleVmrunExForL1ToL2(VpData, &guestContext);
 			break;
+        case VMEXIT_VMSAVE:
+            SvHandleVmsaveNest(VpData, &guestContext);
+            break;
 		case VMEXIT_VMMCALL:
             SvHandleVmmcallNest(VpData, &guestContext);
 			break;
