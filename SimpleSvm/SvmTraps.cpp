@@ -138,6 +138,71 @@ VOID SvHandleBreakPointException(
     VpData->GuestVmcb.StateSaveArea.Rip = VpData->GuestVmcb.ControlArea.NRip; // need npt
 }
 
+VOID SvHandleVmsave(
+    _Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
+    _Inout_ PGUEST_CONTEXT GuestContext)
+{
+    if (VpData->GuestVmcb.StateSaveArea.Cpl > 0)
+    {
+        SvInjectGeneralProtectionException(VpData);
+        return;
+    }
+
+    PVMCB pVmcbGuest12va = (PVMCB)UtilVaFromPa(GuestContext->VpRegs->Rax);
+    PVMCB pVmcbGuest01va = &VpData->GuestVmcb;
+
+    // Store to a VMCB at system-physical address rAX:
+    // FS, GS, TR, LDTR (including all hidden state) 
+    // KernelGsBase
+    // STAR, LSTAR, CSTAR, SFMASK
+    // SYSENTER_CS, SYSENTER_ESP, SYSENTER_EIP 
+
+    pVmcbGuest12va->StateSaveArea.FsBase = pVmcbGuest01va->StateSaveArea.FsBase;
+    pVmcbGuest12va->StateSaveArea.FsLimit = pVmcbGuest01va->StateSaveArea.FsLimit;
+    pVmcbGuest12va->StateSaveArea.FsSelector = pVmcbGuest01va->StateSaveArea.FsSelector;
+    pVmcbGuest12va->StateSaveArea.FsAttrib = pVmcbGuest01va->StateSaveArea.FsAttrib;
+
+    pVmcbGuest12va->StateSaveArea.GsBase = pVmcbGuest01va->StateSaveArea.GsBase;
+    pVmcbGuest12va->StateSaveArea.GsLimit = pVmcbGuest01va->StateSaveArea.GsLimit;
+    pVmcbGuest12va->StateSaveArea.GsSelector = pVmcbGuest01va->StateSaveArea.GsSelector;
+    pVmcbGuest12va->StateSaveArea.GsAttrib = pVmcbGuest01va->StateSaveArea.GsAttrib;
+
+    pVmcbGuest12va->StateSaveArea.TrBase = pVmcbGuest01va->StateSaveArea.TrBase;
+    pVmcbGuest12va->StateSaveArea.TrLimit = pVmcbGuest01va->StateSaveArea.TrLimit;
+    pVmcbGuest12va->StateSaveArea.TrSelector = pVmcbGuest01va->StateSaveArea.TrSelector;
+    pVmcbGuest12va->StateSaveArea.TrAttrib = pVmcbGuest01va->StateSaveArea.TrAttrib;
+
+    pVmcbGuest12va->StateSaveArea.LdtrBase = pVmcbGuest01va->StateSaveArea.LdtrBase;
+    pVmcbGuest12va->StateSaveArea.LdtrLimit = pVmcbGuest01va->StateSaveArea.LdtrLimit;
+    pVmcbGuest12va->StateSaveArea.LdtrSelector = pVmcbGuest01va->StateSaveArea.LdtrSelector;
+    pVmcbGuest12va->StateSaveArea.LdtrAttrib = pVmcbGuest01va->StateSaveArea.LdtrAttrib;
+
+    pVmcbGuest12va->StateSaveArea.KernelGsBase = pVmcbGuest01va->StateSaveArea.KernelGsBase;
+
+    // star
+    pVmcbGuest12va->StateSaveArea.Star = pVmcbGuest01va->StateSaveArea.Star;
+
+    // lstar
+    pVmcbGuest12va->StateSaveArea.LStar = pVmcbGuest01va->StateSaveArea.LStar;
+
+    // cstar 
+    pVmcbGuest12va->StateSaveArea.CStar = pVmcbGuest01va->StateSaveArea.CStar;
+
+    // sfmask
+    pVmcbGuest12va->StateSaveArea.SfMask = pVmcbGuest01va->StateSaveArea.SfMask;
+
+    // sysentercs
+    pVmcbGuest12va->StateSaveArea.SysenterCs = pVmcbGuest01va->StateSaveArea.SysenterCs;
+
+    // sysenteresp
+    pVmcbGuest12va->StateSaveArea.SysenterEsp = pVmcbGuest01va->StateSaveArea.SysenterEsp;
+
+    // sysentereip
+    pVmcbGuest12va->StateSaveArea.SysenterEip = pVmcbGuest01va->StateSaveArea.SysenterEip;
+
+    VpData->GuestVmcb.StateSaveArea.Rip = VpData->GuestVmcb.ControlArea.NRip; // need npt
+}
+
 _IRQL_requires_same_
 VOID
 SvHandleVmrunEx(

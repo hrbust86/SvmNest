@@ -386,6 +386,9 @@ SvHandleVmExit (
 		case VMEXIT_VMMCALL:
 			SvHandleVmmcall(VpData, &guestContext);
 			break;
+        case VMEXIT_VMSAVE:
+            SvHandleVmsave(VpData, &guestContext);
+            break;
         case VMEXIT_EXCEPTION_BP:
             SvHandleBreakPointException(VpData, &guestContext);
             break;
@@ -654,6 +657,7 @@ SvPrepareForVirtualization (
     VpData->GuestVmcb.ControlArea.InterceptMisc1 |= SVM_INTERCEPT_MISC1_CPUID;
     VpData->GuestVmcb.ControlArea.InterceptMisc2 |= SVM_INTERCEPT_MISC2_VMRUN;
 	VpData->GuestVmcb.ControlArea.InterceptMisc2 |= SVM_INTERCEPT_MISC2_VMMCALL;
+    VpData->GuestVmcb.ControlArea.InterceptMisc2 |= SVM_INTERCEPT_MISC2_VMSAVE;
 
     //
     // Also, configure to trigger #VMEXIT on MSR access as configured by the
