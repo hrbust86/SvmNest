@@ -370,6 +370,8 @@ VOID SvHandleVmsaveNest(
         pVmcbGuest12va->StateSaveArea.GsSelector = pVmcbGuest02va->StateSaveArea.GsSelector;
         pVmcbGuest12va->StateSaveArea.GsAttrib = pVmcbGuest02va->StateSaveArea.GsAttrib;
 
+        pVmcbGuest12va->StateSaveArea.KernelGsBase = pVmcbGuest02va->StateSaveArea.KernelGsBase;
+
         pVmcbGuest12va->StateSaveArea.TrBase = pVmcbGuest02va->StateSaveArea.TrBase;
         pVmcbGuest12va->StateSaveArea.TrLimit = pVmcbGuest02va->StateSaveArea.TrLimit;
         pVmcbGuest12va->StateSaveArea.TrSelector = pVmcbGuest02va->StateSaveArea.TrSelector;
@@ -379,8 +381,6 @@ VOID SvHandleVmsaveNest(
         pVmcbGuest12va->StateSaveArea.LdtrLimit = pVmcbGuest02va->StateSaveArea.LdtrLimit;
         pVmcbGuest12va->StateSaveArea.LdtrSelector = pVmcbGuest02va->StateSaveArea.LdtrSelector;
         pVmcbGuest12va->StateSaveArea.LdtrAttrib = pVmcbGuest02va->StateSaveArea.LdtrAttrib;
-
-        pVmcbGuest12va->StateSaveArea.KernelGsBase = pVmcbGuest02va->StateSaveArea.KernelGsBase;
 
         // star
         pVmcbGuest12va->StateSaveArea.Star = pVmcbGuest02va->StateSaveArea.Star;
