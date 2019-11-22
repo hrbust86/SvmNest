@@ -380,6 +380,7 @@ VOID SimulateReloadHostStateInToVmcbGuest02(_Inout_ PVIRTUAL_PROCESSOR_DATA VpDa
 
     // DR7 = ¡°all disabled¡± 
 
+    VmmpGetVcpuVmx(VpData)->uintL2GuestCpl = pVmcbGuest02va->StateSaveArea.Cpl; // save L2 guest cpl 
     // CPL = 0 
     pVmcbGuest02va->StateSaveArea.Cpl = 0;
 
