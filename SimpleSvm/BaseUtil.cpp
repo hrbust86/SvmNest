@@ -380,10 +380,6 @@ VOID SimulateReloadHostStateInToVmcbGuest02(_Inout_ PVIRTUAL_PROCESSOR_DATA VpDa
 
     // DR7 = ¡°all disabled¡± 
 
-    VmmpGetVcpuVmx(VpData)->uintL2GuestCpl = pVmcbGuest02va->StateSaveArea.Cpl; // save L2 guest cpl 
-    // CPL = 0 
-    pVmcbGuest02va->StateSaveArea.Cpl = 0;
-
     //ES.sel; reload segment descriptor from GDT 
     //CS.sel; reload segment descriptor from GDT 
     //SS.sel; reload segment descriptor from GDT 
@@ -392,6 +388,19 @@ VOID SimulateReloadHostStateInToVmcbGuest02(_Inout_ PVIRTUAL_PROCESSOR_DATA VpDa
     pVmcbGuest02va->StateSaveArea.DsSelector = pVmcbHostStateShadow->StateSaveArea.DsSelector;
     pVmcbGuest02va->StateSaveArea.EsSelector = pVmcbHostStateShadow->StateSaveArea.EsSelector;
     pVmcbGuest02va->StateSaveArea.SsSelector = pVmcbHostStateShadow->StateSaveArea.SsSelector;
+
+    VmmpGetVcpuVmx(VpData)->uintL2GuestCpl = pVmcbGuest02va->StateSaveArea.Cpl; // save L2 guest cpl 
+    // CPL = 0 
+    pVmcbGuest02va->StateSaveArea.Cpl = 0;
+
+    if (3 == VmmpGetVcpuVmx(VpData)->uintL2GuestCpl) 
+    {
+        VmmpGetVcpuVmx(VpData)->uint64L2KernelGsBase = pVmcbGuest02va->StateSaveArea.KernelGsBase;
+        VmmpGetVcpuVmx(VpData)->uint64L2GsBase = pVmcbGuest02va->StateSaveArea.GsBase;
+        VmmpGetVcpuVmx(VpData)->uintL2GsLimit = pVmcbGuest02va->StateSaveArea.GsLimit;
+        VmmpGetVcpuVmx(VpData)->uintL2GsSelector = pVmcbGuest02va->StateSaveArea.GsSelector;
+        VmmpGetVcpuVmx(VpData)->uintL2GsAttrib = pVmcbGuest02va->StateSaveArea.GsAttrib;
+    }
 
     // others
     pVmcbGuest02va->StateSaveArea.KernelGsBase = pVmcbHostStateShadow->StateSaveArea.KernelGsBase;

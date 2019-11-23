@@ -365,13 +365,24 @@ VOID SvHandleVmsaveNest(
         pVmcbGuest12va->StateSaveArea.FsSelector = pVmcbGuest02va->StateSaveArea.FsSelector;
         pVmcbGuest12va->StateSaveArea.FsAttrib = pVmcbGuest02va->StateSaveArea.FsAttrib;
 
-        pVmcbGuest12va->StateSaveArea.GsBase = pVmcbGuest02va->StateSaveArea.GsBase;
-        pVmcbGuest12va->StateSaveArea.GsLimit = pVmcbGuest02va->StateSaveArea.GsLimit;
-        pVmcbGuest12va->StateSaveArea.GsSelector = pVmcbGuest02va->StateSaveArea.GsSelector;
-        pVmcbGuest12va->StateSaveArea.GsAttrib = pVmcbGuest02va->StateSaveArea.GsAttrib;
+        if (3 == VmmpGetVcpuVmx(VpData)->uintL2GuestCpl)
+        {
+            pVmcbGuest12va->StateSaveArea.KernelGsBase = VmmpGetVcpuVmx(VpData)->uint64L2KernelGsBase;
+            pVmcbGuest12va->StateSaveArea.GsBase = VmmpGetVcpuVmx(VpData)->uint64L2GsBase;
+            pVmcbGuest12va->StateSaveArea.GsLimit = VmmpGetVcpuVmx(VpData)->uintL2GsLimit;
+            pVmcbGuest12va->StateSaveArea.GsSelector = VmmpGetVcpuVmx(VpData)->uintL2GsSelector;
+            pVmcbGuest12va->StateSaveArea.GsAttrib = VmmpGetVcpuVmx(VpData)->uintL2GsAttrib;
+        }
+        else
+        {
+            pVmcbGuest12va->StateSaveArea.GsBase = pVmcbGuest02va->StateSaveArea.GsBase;
+            pVmcbGuest12va->StateSaveArea.GsLimit = pVmcbGuest02va->StateSaveArea.GsLimit;
+            pVmcbGuest12va->StateSaveArea.GsSelector = pVmcbGuest02va->StateSaveArea.GsSelector;
+            pVmcbGuest12va->StateSaveArea.GsAttrib = pVmcbGuest02va->StateSaveArea.GsAttrib;
 
-        pVmcbGuest12va->StateSaveArea.KernelGsBase = pVmcbGuest02va->StateSaveArea.KernelGsBase;
-
+            pVmcbGuest12va->StateSaveArea.KernelGsBase = pVmcbGuest02va->StateSaveArea.KernelGsBase;
+        }
+        
         pVmcbGuest12va->StateSaveArea.TrBase = pVmcbGuest02va->StateSaveArea.TrBase;
         pVmcbGuest12va->StateSaveArea.TrLimit = pVmcbGuest02va->StateSaveArea.TrLimit;
         pVmcbGuest12va->StateSaveArea.TrSelector = pVmcbGuest02va->StateSaveArea.TrSelector;
