@@ -582,4 +582,7 @@ void SimulateVmrun02LoadGuestStateFromVmcbGuest12(
     pVmcbGuest02va->StateSaveArea.Dr6 = pVmcbGuest12va->StateSaveArea.Dr6;
     pVmcbGuest02va->StateSaveArea.Cpl = pVmcbGuest12va->StateSaveArea.Cpl;
     pVmcbGuest02va->ControlArea.InterruptShadow = pVmcbGuest12va->ControlArea.InterruptShadow;
+
+    // others
+    pVmcbGuest02va->ControlArea.NRip = pVmcbGuest12va->ControlArea.NRip;
 }
