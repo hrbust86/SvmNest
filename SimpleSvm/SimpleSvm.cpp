@@ -660,6 +660,7 @@ SvPrepareForVirtualization (
     VpData->GuestVmcb.ControlArea.InterceptMisc1 |= SVM_INTERCEPT_MISC1_CPUID;
     VpData->GuestVmcb.ControlArea.InterceptMisc2 |= SVM_INTERCEPT_MISC2_VMRUN;
 	VpData->GuestVmcb.ControlArea.InterceptMisc2 |= SVM_INTERCEPT_MISC2_VMMCALL;
+    VpData->GuestVmcb.ControlArea.InterceptMisc2 |= SVM_INTERCEPT_MISC2_VMLOAD;
     VpData->GuestVmcb.ControlArea.InterceptMisc2 |= SVM_INTERCEPT_MISC2_VMSAVE;
 
     //
@@ -695,7 +696,7 @@ SvPrepareForVirtualization (
     VpData->GuestVmcb.ControlArea.NpEnable |= SVM_NP_ENABLE_NP_ENABLE;
     VpData->GuestVmcb.ControlArea.NCr3 = pml4BasePa.QuadPart;
 
-    VpData->GuestVmcb.ControlArea.LbrVirtualizationEnable |= SVM_ENABLE_NEST_SVM;
+    //VpData->GuestVmcb.ControlArea.LbrVirtualizationEnable |= SVM_ENABLE_NEST_SVM;
 
     // This feature allows STGI and CLGI to execute in Guest mode and control virtual interrupts in guest 
     // mode while still allowing physical interrupts to be intercepted by the hypervisor. 

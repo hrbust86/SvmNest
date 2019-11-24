@@ -35,6 +35,7 @@
 #define SVM_INTERCEPT_MISC1_MSR_PROT    (1UL << 28)
 #define SVM_INTERCEPT_MISC2_VMRUN       (1UL << 0)
 #define SVM_INTERCEPT_MISC2_VMMCALL  (1UL << 1)
+#define SVM_INTERCEPT_MISC2_VMLOAD    (1UL << 2) // 2 Intercept VMLOAD instruction. 
 #define SVM_INTERCEPT_MISC2_VMSAVE   (1UL << 3) // 3 Intercept VMSAVE instruction. 
 #define SVM_NP_ENABLE_NP_ENABLE         (1UL << 0)
 
