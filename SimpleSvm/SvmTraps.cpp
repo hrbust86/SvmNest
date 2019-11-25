@@ -138,6 +138,42 @@ VOID SvHandleBreakPointException(
     VpData->GuestVmcb.StateSaveArea.Rip = VpData->GuestVmcb.ControlArea.NRip; // need npt
 }
 
+VOID SvHandleVmload(
+    _Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
+    _Inout_ PGUEST_CONTEXT GuestContext)
+{
+    if (VpData->GuestVmcb.StateSaveArea.Cpl > 0)
+    {
+        SvInjectGeneralProtectionException(VpData);
+        return;
+    }
+
+    PVMCB pVmcbGuestL2Hostva = (PVMCB)UtilVaFromPa(GuestContext->VpRegs->Rax);
+    PVMCB pVmcbGuest01va = &VpData->GuestVmcb;
+
+    // Load from a VMCB at system-physical address rAX: 
+    // FS, GS, TR, LDTR (including all hidden state) 
+    // KernelGsBase
+    // STAR, LSTAR, CSTAR, SFMASK 
+    // SYSENTER_CS, SYSENTER_ESP, SYSENTER_EIP 
+
+    pVmcbGuest01va->StateSaveArea.FsBase = pVmcbGuestL2Hostva->StateSaveArea.FsBase;
+    pVmcbGuest01va->StateSaveArea.FsLimit = pVmcbGuestL2Hostva->StateSaveArea.FsLimit;
+    pVmcbGuest01va->StateSaveArea.FsSelector = pVmcbGuestL2Hostva->StateSaveArea.FsSelector;
+    pVmcbGuest01va->StateSaveArea.FsAttrib = pVmcbGuestL2Hostva->StateSaveArea.FsAttrib;
+
+    pVmcbGuest01va->StateSaveArea.GsBase = pVmcbGuestL2Hostva->StateSaveArea.GsBase;
+    pVmcbGuest01va->StateSaveArea.GsLimit = pVmcbGuestL2Hostva->StateSaveArea.GsLimit;
+    pVmcbGuest01va->StateSaveArea.GsSelector = pVmcbGuestL2Hostva->StateSaveArea.GsSelector;
+    pVmcbGuest01va->StateSaveArea.GsAttrib = pVmcbGuestL2Hostva->StateSaveArea.GsAttrib;
+
+    pVmcbGuest01va->StateSaveArea.TrBase = pVmcbGuestL2Hostva->StateSaveArea.TrBase;
+    pVmcbGuest01va->StateSaveArea.TrLimit = pVmcbGuestL2Hostva->StateSaveArea.TrLimit;
+    pVmcbGuest01va->StateSaveArea.TrSelector = pVmcbGuestL2Hostva->StateSaveArea.TrSelector;
+    pVmcbGuest01va->StateSaveArea.TrAttrib = pVmcbGuestL2Hostva->StateSaveArea.TrAttrib;
+
+}
+
 VOID SvHandleVmsave(
     _Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
     _Inout_ PGUEST_CONTEXT GuestContext)
