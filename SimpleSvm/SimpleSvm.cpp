@@ -390,7 +390,7 @@ SvHandleVmExit (
             SvHandleVmsave(VpData, &guestContext);
             break;
         case VMEXIT_VMLOAD:
-            
+            SvHandleVmload(VpData, &guestContext);
             break;
         case VMEXIT_EXCEPTION_BP:
             SvHandleBreakPointException(VpData, &guestContext);

@@ -172,6 +172,28 @@ VOID SvHandleVmload(
     pVmcbGuest01va->StateSaveArea.TrSelector = pVmcbGuestL2Hostva->StateSaveArea.TrSelector;
     pVmcbGuest01va->StateSaveArea.TrAttrib = pVmcbGuestL2Hostva->StateSaveArea.TrAttrib;
 
+    pVmcbGuest01va->StateSaveArea.LdtrBase = pVmcbGuestL2Hostva->StateSaveArea.LdtrBase;
+    pVmcbGuest01va->StateSaveArea.LdtrLimit = pVmcbGuestL2Hostva->StateSaveArea.LdtrLimit;
+    pVmcbGuest01va->StateSaveArea.LdtrSelector = pVmcbGuestL2Hostva->StateSaveArea.LdtrSelector;
+    pVmcbGuest01va->StateSaveArea.LdtrAttrib = pVmcbGuestL2Hostva->StateSaveArea.LdtrAttrib;
+
+    pVmcbGuest01va->StateSaveArea.KernelGsBase = pVmcbGuestL2Hostva->StateSaveArea.KernelGsBase;
+
+    pVmcbGuest01va->StateSaveArea.Star = pVmcbGuestL2Hostva->StateSaveArea.Star;
+
+    pVmcbGuest01va->StateSaveArea.LStar = pVmcbGuestL2Hostva->StateSaveArea.LStar;
+
+    pVmcbGuest01va->StateSaveArea.CStar = pVmcbGuestL2Hostva->StateSaveArea.CStar;
+
+    pVmcbGuest01va->StateSaveArea.SfMask = pVmcbGuestL2Hostva->StateSaveArea.SfMask;
+
+    pVmcbGuest01va->StateSaveArea.SysenterCs = pVmcbGuestL2Hostva->StateSaveArea.SysenterCs;
+
+    pVmcbGuest01va->StateSaveArea.SysenterEsp = pVmcbGuestL2Hostva->StateSaveArea.SysenterEsp;
+
+    pVmcbGuest01va->StateSaveArea.SysenterEip = pVmcbGuestL2Hostva->StateSaveArea.SysenterEip;
+
+    VpData->GuestVmcb.StateSaveArea.Rip = VpData->GuestVmcb.ControlArea.NRip; // need npt
 }
 
 VOID SvHandleVmsave(

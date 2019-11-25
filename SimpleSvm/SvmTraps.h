@@ -35,6 +35,10 @@ VOID SvHandleVmrunEx(
 	_Inout_ PGUEST_CONTEXT GuestContext
 );
 
+VOID SvHandleVmload(
+    _Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
+    _Inout_ PGUEST_CONTEXT GuestContext);
+
 VOID SvHandleVmsave(
     _Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
     _Inout_ PGUEST_CONTEXT GuestContext);
