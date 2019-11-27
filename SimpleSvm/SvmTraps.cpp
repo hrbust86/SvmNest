@@ -418,7 +418,7 @@ VOID SvHandleVmloadNest(
         // SYSENTER_CS, SYSENTER_ESP, SYSENTER_EIP 
 
         if (3 == VmmpGetVcpuVmx(VpData)->uintL2GuestCpl
-         && pVmcbL2Hostva->StateSaveArea.KernelGsBase < 0xF00000000) // 要加载ring3 的 kernelbase
+         && pVmcbL2Hostva->StateSaveArea.GsBase < 0xf000000000000000) // 要加载ring3 的 kernelbase
         {
             // 不修改任何状态，直接返回L1
             pVmcbGuest02va->StateSaveArea.Rip = pVmcbGuest02va->ControlArea.NRip;
