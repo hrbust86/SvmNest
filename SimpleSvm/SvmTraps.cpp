@@ -420,46 +420,12 @@ VOID SvHandleVmloadNest(
         if (3 == VmmpGetVcpuVmx(VpData)->uintL2GuestCpl
          && pVmcbL2Hostva->StateSaveArea.GsBase < 0xf000000000000000) // 要加载ring3 的 kernelbase
         {
-            // 不修改任何状态，直接返回L1
-            pVmcbGuest02va->StateSaveArea.Rip = pVmcbGuest02va->ControlArea.NRip;
-            return; // return L1
+            CopyVmcbBasic(&(VmmpGetVcpuVmx(VpData)->VmcbL2Ring3), pVmcbL2Hostva);
         }
-
-        pVmcbGuest02va->StateSaveArea.FsBase = pVmcbL2Hostva->StateSaveArea.FsBase;
-        pVmcbGuest02va->StateSaveArea.FsLimit = pVmcbL2Hostva->StateSaveArea.FsLimit;
-        pVmcbGuest02va->StateSaveArea.FsSelector = pVmcbL2Hostva->StateSaveArea.FsSelector;
-        pVmcbGuest02va->StateSaveArea.FsAttrib = pVmcbL2Hostva->StateSaveArea.FsAttrib;
-
-        pVmcbGuest02va->StateSaveArea.GsBase = pVmcbL2Hostva->StateSaveArea.GsBase;
-        pVmcbGuest02va->StateSaveArea.GsLimit = pVmcbL2Hostva->StateSaveArea.GsLimit;
-        pVmcbGuest02va->StateSaveArea.GsSelector = pVmcbL2Hostva->StateSaveArea.GsSelector;
-        pVmcbGuest02va->StateSaveArea.GsAttrib = pVmcbL2Hostva->StateSaveArea.GsAttrib;
-
-        pVmcbGuest02va->StateSaveArea.TrBase = pVmcbL2Hostva->StateSaveArea.TrBase;
-        pVmcbGuest02va->StateSaveArea.TrLimit = pVmcbL2Hostva->StateSaveArea.TrLimit;
-        pVmcbGuest02va->StateSaveArea.TrSelector = pVmcbL2Hostva->StateSaveArea.TrSelector;
-        pVmcbGuest02va->StateSaveArea.TrAttrib = pVmcbL2Hostva->StateSaveArea.TrAttrib;
-
-        pVmcbGuest02va->StateSaveArea.LdtrBase = pVmcbL2Hostva->StateSaveArea.LdtrBase;
-        pVmcbGuest02va->StateSaveArea.LdtrLimit = pVmcbL2Hostva->StateSaveArea.LdtrLimit;
-        pVmcbGuest02va->StateSaveArea.LdtrSelector = pVmcbL2Hostva->StateSaveArea.LdtrSelector;
-        pVmcbGuest02va->StateSaveArea.LdtrAttrib = pVmcbL2Hostva->StateSaveArea.LdtrAttrib;
-
-        pVmcbGuest02va->StateSaveArea.KernelGsBase = pVmcbL2Hostva->StateSaveArea.KernelGsBase;
-
-        pVmcbGuest02va->StateSaveArea.Star = pVmcbL2Hostva->StateSaveArea.Star;
-
-        pVmcbGuest02va->StateSaveArea.LStar = pVmcbL2Hostva->StateSaveArea.LStar;
-
-        pVmcbGuest02va->StateSaveArea.CStar = pVmcbL2Hostva->StateSaveArea.CStar;
-
-        pVmcbGuest02va->StateSaveArea.SfMask = pVmcbL2Hostva->StateSaveArea.SfMask;
-
-        pVmcbGuest02va->StateSaveArea.SysenterCs = pVmcbL2Hostva->StateSaveArea.SysenterCs;
-
-        pVmcbGuest02va->StateSaveArea.SysenterEsp = pVmcbL2Hostva->StateSaveArea.SysenterEsp;
-
-        pVmcbGuest02va->StateSaveArea.SysenterEip = pVmcbL2Hostva->StateSaveArea.SysenterEip;
+        else
+        {
+            CopyVmcbBasic(pVmcbGuest02va, pVmcbL2Hostva);
+        }
 
         pVmcbGuest02va->StateSaveArea.Rip = pVmcbGuest02va->ControlArea.NRip;
         return; // return L1
@@ -493,59 +459,14 @@ VOID SvHandleVmsaveNest(
         // STAR, LSTAR, CSTAR, SFMASK
         // SYSENTER_CS, SYSENTER_ESP, SYSENTER_EIP 
 
-        pVmcbGuest12va->StateSaveArea.FsBase = pVmcbGuest02va->StateSaveArea.FsBase;
-        pVmcbGuest12va->StateSaveArea.FsLimit = pVmcbGuest02va->StateSaveArea.FsLimit;
-        pVmcbGuest12va->StateSaveArea.FsSelector = pVmcbGuest02va->StateSaveArea.FsSelector;
-        pVmcbGuest12va->StateSaveArea.FsAttrib = pVmcbGuest02va->StateSaveArea.FsAttrib;
-
         if (3 == VmmpGetVcpuVmx(VpData)->uintL2GuestCpl)
         {
-            pVmcbGuest12va->StateSaveArea.KernelGsBase = VmmpGetVcpuVmx(VpData)->uint64L2KernelGsBase;
-            pVmcbGuest12va->StateSaveArea.GsBase = VmmpGetVcpuVmx(VpData)->uint64L2GsBase;
-            pVmcbGuest12va->StateSaveArea.GsLimit = VmmpGetVcpuVmx(VpData)->uintL2GsLimit;
-            pVmcbGuest12va->StateSaveArea.GsSelector = VmmpGetVcpuVmx(VpData)->uintL2GsSelector;
-            pVmcbGuest12va->StateSaveArea.GsAttrib = VmmpGetVcpuVmx(VpData)->uintL2GsAttrib;
+            CopyVmcbBasic(pVmcbGuest12va, &(VmmpGetVcpuVmx(VpData)->VmcbL2Ring3));
         }
         else
         {
-            pVmcbGuest12va->StateSaveArea.GsBase = pVmcbGuest02va->StateSaveArea.GsBase;
-            pVmcbGuest12va->StateSaveArea.GsLimit = pVmcbGuest02va->StateSaveArea.GsLimit;
-            pVmcbGuest12va->StateSaveArea.GsSelector = pVmcbGuest02va->StateSaveArea.GsSelector;
-            pVmcbGuest12va->StateSaveArea.GsAttrib = pVmcbGuest02va->StateSaveArea.GsAttrib;
-
-            pVmcbGuest12va->StateSaveArea.KernelGsBase = pVmcbGuest02va->StateSaveArea.KernelGsBase;
+            CopyVmcbBasic(pVmcbGuest12va, pVmcbGuest02va);
         }
-        
-        pVmcbGuest12va->StateSaveArea.TrBase = pVmcbGuest02va->StateSaveArea.TrBase;
-        pVmcbGuest12va->StateSaveArea.TrLimit = pVmcbGuest02va->StateSaveArea.TrLimit;
-        pVmcbGuest12va->StateSaveArea.TrSelector = pVmcbGuest02va->StateSaveArea.TrSelector;
-        pVmcbGuest12va->StateSaveArea.TrAttrib = pVmcbGuest02va->StateSaveArea.TrAttrib;
-
-        pVmcbGuest12va->StateSaveArea.LdtrBase = pVmcbGuest02va->StateSaveArea.LdtrBase;
-        pVmcbGuest12va->StateSaveArea.LdtrLimit = pVmcbGuest02va->StateSaveArea.LdtrLimit;
-        pVmcbGuest12va->StateSaveArea.LdtrSelector = pVmcbGuest02va->StateSaveArea.LdtrSelector;
-        pVmcbGuest12va->StateSaveArea.LdtrAttrib = pVmcbGuest02va->StateSaveArea.LdtrAttrib;
-
-        // star
-        pVmcbGuest12va->StateSaveArea.Star = pVmcbGuest02va->StateSaveArea.Star;
-
-        // lstar
-        pVmcbGuest12va->StateSaveArea.LStar = pVmcbGuest02va->StateSaveArea.LStar;
-
-        // cstar 
-        pVmcbGuest12va->StateSaveArea.CStar = pVmcbGuest02va->StateSaveArea.CStar;
-
-        // sfmask
-        pVmcbGuest12va->StateSaveArea.SfMask = pVmcbGuest02va->StateSaveArea.SfMask;
-
-        // sysentercs
-        pVmcbGuest12va->StateSaveArea.SysenterCs = pVmcbGuest02va->StateSaveArea.SysenterCs;
-
-        // sysenteresp
-        pVmcbGuest12va->StateSaveArea.SysenterEsp = pVmcbGuest02va->StateSaveArea.SysenterEsp;
-
-        // sysentereip
-        pVmcbGuest12va->StateSaveArea.SysenterEip = pVmcbGuest02va->StateSaveArea.SysenterEip;
 
         pVmcbGuest02va->StateSaveArea.Rip = pVmcbGuest02va->ControlArea.NRip;
         return; // return L1

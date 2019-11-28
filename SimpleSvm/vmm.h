@@ -53,12 +53,8 @@ typedef struct _VCPU_VMX
 	struct _VIRTUAL_PROCESSOR_DATA* pVpdata; // very important just like _VIRTUAL_PROCESSOR_DATA
     ULONG64  hostStateAreaPa_02_pa;
     VMCB VmcbHostStateArea02Shadow; // for simulate vmexit in L2
+    VMCB VmcbL2Ring3;
     UINT8      uintL2GuestCpl;
-    UINT64    uint64L2KernelGsBase;
-    UINT64    uint64L2GsBase;
-    UINT32    uintL2GsLimit;
-    UINT16    uintL2GsAttrib;
-    UINT16    uintL2GsSelector;
     ULONG64  vmcb_guest_12_pa;
     ULONG64  vmcb_host_12_pa;
     ULONG64  hostStateAreaPa_12_pa;

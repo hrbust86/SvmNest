@@ -197,6 +197,55 @@ VMCB * GetCurrentVmcbGuest02(PVIRTUAL_PROCESSOR_DATA pVpdata)
     return pVmcbGuest02va;
 }
 
+VOID  CopyVmcbBasic(PVMCB pVmcbDest, PVMCB pVmcbSrc)
+{
+    pVmcbDest->StateSaveArea.FsBase = pVmcbSrc->StateSaveArea.FsBase;
+    pVmcbDest->StateSaveArea.FsLimit = pVmcbSrc->StateSaveArea.FsLimit;
+    pVmcbDest->StateSaveArea.FsSelector = pVmcbSrc->StateSaveArea.FsSelector;
+    pVmcbDest->StateSaveArea.FsAttrib = pVmcbSrc->StateSaveArea.FsAttrib;
+
+
+    pVmcbDest->StateSaveArea.GsBase = pVmcbSrc->StateSaveArea.GsBase;
+    pVmcbDest->StateSaveArea.GsLimit = pVmcbSrc->StateSaveArea.GsLimit;
+    pVmcbDest->StateSaveArea.GsSelector = pVmcbSrc->StateSaveArea.GsSelector;
+    pVmcbDest->StateSaveArea.GsAttrib = pVmcbSrc->StateSaveArea.GsAttrib;
+
+    pVmcbDest->StateSaveArea.KernelGsBase = pVmcbSrc->StateSaveArea.KernelGsBase;
+
+
+    pVmcbDest->StateSaveArea.TrBase = pVmcbSrc->StateSaveArea.TrBase;
+    pVmcbDest->StateSaveArea.TrLimit = pVmcbSrc->StateSaveArea.TrLimit;
+    pVmcbDest->StateSaveArea.TrSelector = pVmcbSrc->StateSaveArea.TrSelector;
+    pVmcbDest->StateSaveArea.TrAttrib = pVmcbSrc->StateSaveArea.TrAttrib;
+
+    pVmcbDest->StateSaveArea.LdtrBase = pVmcbSrc->StateSaveArea.LdtrBase;
+    pVmcbDest->StateSaveArea.LdtrLimit = pVmcbSrc->StateSaveArea.LdtrLimit;
+    pVmcbDest->StateSaveArea.LdtrSelector = pVmcbSrc->StateSaveArea.LdtrSelector;
+    pVmcbDest->StateSaveArea.LdtrAttrib = pVmcbSrc->StateSaveArea.LdtrAttrib;
+
+    // star
+    pVmcbDest->StateSaveArea.Star = pVmcbSrc->StateSaveArea.Star;
+
+    // lstar
+    pVmcbDest->StateSaveArea.LStar = pVmcbSrc->StateSaveArea.LStar;
+
+    // cstar 
+    pVmcbDest->StateSaveArea.CStar = pVmcbSrc->StateSaveArea.CStar;
+
+    // sfmask
+    pVmcbDest->StateSaveArea.SfMask = pVmcbSrc->StateSaveArea.SfMask;
+
+    // sysentercs
+    pVmcbDest->StateSaveArea.SysenterCs = pVmcbSrc->StateSaveArea.SysenterCs;
+
+    // sysenteresp
+    pVmcbDest->StateSaveArea.SysenterEsp = pVmcbSrc->StateSaveArea.SysenterEsp;
+
+    // sysentereip
+    pVmcbDest->StateSaveArea.SysenterEip = pVmcbSrc->StateSaveArea.SysenterEip;
+}
+
+
 VOID HandleMsrReadAndWrite(
 _Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
     _Inout_ PGUEST_CONTEXT GuestContext)
@@ -393,22 +442,12 @@ VOID SimulateReloadHostStateInToVmcbGuest02(_Inout_ PVIRTUAL_PROCESSOR_DATA VpDa
     // CPL = 0 
     pVmcbGuest02va->StateSaveArea.Cpl = 0;
 
-    if (3 == VmmpGetVcpuVmx(VpData)->uintL2GuestCpl) 
+    if (3 == VmmpGetVcpuVmx(VpData)->uintL2GuestCpl) // save L2 ring3 vmcb
     {
-        VmmpGetVcpuVmx(VpData)->uint64L2KernelGsBase = pVmcbGuest02va->StateSaveArea.KernelGsBase;
-        VmmpGetVcpuVmx(VpData)->uint64L2GsBase = pVmcbGuest02va->StateSaveArea.GsBase;
-        VmmpGetVcpuVmx(VpData)->uintL2GsLimit = pVmcbGuest02va->StateSaveArea.GsLimit;
-        VmmpGetVcpuVmx(VpData)->uintL2GsSelector = pVmcbGuest02va->StateSaveArea.GsSelector;
-        VmmpGetVcpuVmx(VpData)->uintL2GsAttrib = pVmcbGuest02va->StateSaveArea.GsAttrib;
+        CopyVmcbBasic(&(VmmpGetVcpuVmx(VpData)->VmcbL2Ring3), pVmcbGuest02va);
     }
 
     // others
-    pVmcbGuest02va->StateSaveArea.KernelGsBase = pVmcbHostStateShadow->StateSaveArea.KernelGsBase;
-
-    pVmcbGuest02va->StateSaveArea.GsBase = pVmcbHostStateShadow->StateSaveArea.GsBase;
-    pVmcbGuest02va->StateSaveArea.GsLimit = pVmcbHostStateShadow->StateSaveArea.GsLimit;
-    pVmcbGuest02va->StateSaveArea.GsSelector = pVmcbHostStateShadow->StateSaveArea.GsSelector;
-    pVmcbGuest02va->StateSaveArea.GsAttrib = pVmcbHostStateShadow->StateSaveArea.GsAttrib;
 
 }
 
@@ -461,13 +500,10 @@ void SimulateVmrun02SaveHostStateShadow(
     pVmcbHostStateShadow->StateSaveArea.Rax = pVmcb->StateSaveArea.Rax; 
 
     // others
-    pVmcbHostStateShadow->StateSaveArea.KernelGsBase = pVmcb->StateSaveArea.KernelGsBase;
-
-    pVmcbHostStateShadow->StateSaveArea.GsBase = pVmcb->StateSaveArea.GsBase;
-    pVmcbHostStateShadow->StateSaveArea.GsLimit = pVmcb->StateSaveArea.GsLimit;
-    pVmcbHostStateShadow->StateSaveArea.GsSelector = pVmcb->StateSaveArea.GsSelector;
-    pVmcbHostStateShadow->StateSaveArea.GsAttrib = pVmcb->StateSaveArea.GsAttrib;
-
+    if (3 == VmmpGetVcpuVmx(VpData)->uintL2GuestCpl) // load L2 ring3 vmcb
+    {
+        CopyVmcbBasic(pVmcb, &(VmmpGetVcpuVmx(VpData)->VmcbL2Ring3));
+    }
 }
 
 void SimulateVmrun02LoadControlInfoToVmcbGuest02(
