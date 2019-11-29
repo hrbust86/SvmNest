@@ -417,14 +417,15 @@ VOID SvHandleVmloadNest(
         // STAR, LSTAR, CSTAR, SFMASK 
         // SYSENTER_CS, SYSENTER_ESP, SYSENTER_EIP 
 
-        if (3 == VmmpGetVcpuVmx(VpData)->uintL2GuestCpl
-         && pVmcbL2Hostva->StateSaveArea.GsBase < 0xf000000000000000) // 要加载ring3 的 kernelbase
+        if (pVmcbL2Hostva->StateSaveArea.GsBase < 0xf000000000000000) // 要加载ring3 的 kernelbase
         {
             CopyVmcbBasic(&(VmmpGetVcpuVmx(VpData)->VmcbL2Ring3), pVmcbL2Hostva);
+            VmmpGetVcpuVmx(VpData)->uintL2GuestCpl = 3;
         }
         else
         {
             CopyVmcbBasic(pVmcbGuest02va, pVmcbL2Hostva);
+            VmmpGetVcpuVmx(VpData)->uintL2GuestCpl = 0;
         }
 
         pVmcbGuest02va->StateSaveArea.Rip = pVmcbGuest02va->ControlArea.NRip;
