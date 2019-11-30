@@ -370,7 +370,7 @@ SvHandleVmrunEx(
         SimulateVmrun02SaveHostStateShadow(pVmcbGuest01va, VpData, GuestContext);
         SimulateVmrun02LoadControlInfoToVmcbGuest02(pVmcbGuest12va, VpData, GuestContext);
         SimulateVmrun02LoadGuestStateFromVmcbGuest12(VpData, GuestContext);
-		SaveHostKernelGsBase(VpData);
+
 		__writemsr(SVM_MSR_VM_HSAVE_PA, VpData->HostStackLayout.pProcessNestData->GuestSvmHsave12.QuadPart); // prevent to destroy the 01 HostStateArea
 		//__svm_vmrun(VpData->HostStackLayout.pProcessNestData->vcpu_vmx->vmcb_guest_02_pa);
 		VpData->HostStackLayout.pProcessNestData->vcpu_vmx->pVpdata = VpData;
