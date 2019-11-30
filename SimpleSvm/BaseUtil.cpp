@@ -446,6 +446,10 @@ VOID SimulateReloadHostStateInToVmcbGuest02(_Inout_ PVIRTUAL_PROCESSOR_DATA VpDa
     {
         CopyVmcbBasic(&(VmmpGetVcpuVmx(VpData)->VmcbL2Ring3), pVmcbGuest02va);
     }
+    else // load ring 0 
+    {
+        CopyVmcbBasic(pVmcbGuest02va, &(VmmpGetVcpuVmx(VpData)->VmcbL2Ring0));
+    }
 
     // others
 
@@ -503,6 +507,10 @@ void SimulateVmrun02SaveHostStateShadow(
     if (3 == VmmpGetVcpuVmx(VpData)->uintL2GuestCpl) // load L2 ring3 vmcb
     {
         CopyVmcbBasic(pVmcb, &(VmmpGetVcpuVmx(VpData)->VmcbL2Ring3));
+    }
+    else
+    {
+        CopyVmcbBasic(&(VmmpGetVcpuVmx(VpData)->VmcbL2Ring0), pVmcb); // save ring0 
     }
 }
 
