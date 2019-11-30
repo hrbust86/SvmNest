@@ -442,14 +442,12 @@ VOID SimulateReloadHostStateInToVmcbGuest02(_Inout_ PVIRTUAL_PROCESSOR_DATA VpDa
     // CPL = 0 
     pVmcbGuest02va->StateSaveArea.Cpl = 0;
 
+    // others
     if (3 == VmmpGetVcpuVmx(VpData)->uintL2GuestCpl) // save L2 ring3 vmcb
     {
         CopyVmcbBasic(&(VmmpGetVcpuVmx(VpData)->VmcbL2Ring3), pVmcbGuest02va);
-        CopyVmcbBasic(pVmcbGuest02va, &(VmmpGetVcpuVmx(VpData)->VmcbL2Ring0)); // load ring 0 
     }
-
-    // others
-
+    CopyVmcbBasic(pVmcbGuest02va, &(VmmpGetVcpuVmx(VpData)->VmcbL2Ring0)); // load ring 0 
 }
 
 ///////////////////////////////////simulate vmrun
@@ -501,9 +499,9 @@ void SimulateVmrun02SaveHostStateShadow(
     pVmcbHostStateShadow->StateSaveArea.Rax = pVmcb->StateSaveArea.Rax; 
 
     // others
+    CopyVmcbBasic(&(VmmpGetVcpuVmx(VpData)->VmcbL2Ring0), pVmcb); // save ring0 
     if (3 == VmmpGetVcpuVmx(VpData)->uintL2GuestCpl) // load L2 ring3 vmcb
     {
-        CopyVmcbBasic(&(VmmpGetVcpuVmx(VpData)->VmcbL2Ring0), pVmcb); // save ring0 
         CopyVmcbBasic(pVmcb, &(VmmpGetVcpuVmx(VpData)->VmcbL2Ring3));
     }
 }
