@@ -54,7 +54,7 @@ typedef struct _VCPU_VMX
     ULONG64  hostStateAreaPa_02_pa;
     VMCB VmcbHostStateArea02Shadow; // for simulate vmexit in L2
     VMCB VmcbL2Ring3;
-    VMCB VmcbL2Ring0;
+    VMCB VmcbL1Ring0;
     UINT8      uintL2GuestCpl;
     ULONG64  vmcb_guest_12_pa;
     ULONG64  vmcb_host_12_pa;
