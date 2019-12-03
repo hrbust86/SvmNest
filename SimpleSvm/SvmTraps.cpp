@@ -382,7 +382,7 @@ SvHandleVmrunEx(
 
         SetVGIF(VpData);
         ENTER_GUEST_MODE(VpData->HostStackLayout.pProcessNestData->vcpu_vmx);
-        SvDebugPrint("[ENTER_GUEST_MODE]");
+        SvDebugPrint("[ENTER_GUEST_MODE]\n");
         DumpVmcb(VpData);
     }
 	else // 嵌套环境已经建立
@@ -510,7 +510,7 @@ SvHandleVmrunExForL1ToL2(
         ENTER_GUEST_MODE(VpData->HostStackLayout.pProcessNestData->vcpu_vmx);
         // Sets the global interrupt flag (GIF) to 1. 
         SetVGIF(VpData);
-        SvDebugPrint("[ENTER_GUEST_MODE]");
+        SvDebugPrint("[ENTER_GUEST_MODE]\n");
         DumpVmcb(VpData);
     }
     else

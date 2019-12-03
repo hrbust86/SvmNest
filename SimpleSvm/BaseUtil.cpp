@@ -292,7 +292,7 @@ void LeaveGuest(
     SimulateSaveGuestStateIntoVmcbGuest12(VpData, GuestContext);
     SimulateReloadHostStateInToVmcbGuest02(VpData, GuestContext);
     LEAVE_GUEST_MODE(VmmpGetVcpuVmx(VpData));
-    SvDebugPrint("[LeaveGuest]");
+    SvDebugPrint("[LeaveGuest]\n");
     DumpVmcb(VpData);
 }
 
