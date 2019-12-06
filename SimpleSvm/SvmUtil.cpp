@@ -175,7 +175,26 @@ VOID  CopyVmcbBasic(PVMCB pVmcbDest, PVMCB pVmcbSrc)
 
 VOID CopyVmcbAdv(PVMCB pVmcbDest, PVMCB pVmcbSrc)
 {
-
+    //ES.{base, limit, attr, sel}             
+    //CS.{base, limit, attr, sel}             
+    //SS.{base, limit, attr, sel}             
+    //DS.{base, limit, attr, sel}
+    pVmcbDest->StateSaveArea.CsBase = pVmcbSrc->StateSaveArea.CsBase;
+    pVmcbDest->StateSaveArea.DsBase = pVmcbSrc->StateSaveArea.DsBase;
+    pVmcbDest->StateSaveArea.EsBase = pVmcbSrc->StateSaveArea.EsBase;
+    pVmcbDest->StateSaveArea.SsBase = pVmcbSrc->StateSaveArea.SsBase;
+    pVmcbDest->StateSaveArea.CsLimit = pVmcbSrc->StateSaveArea.CsLimit;
+    pVmcbDest->StateSaveArea.DsLimit = pVmcbSrc->StateSaveArea.DsLimit;
+    pVmcbDest->StateSaveArea.EsLimit = pVmcbSrc->StateSaveArea.EsLimit;
+    pVmcbDest->StateSaveArea.SsLimit = pVmcbSrc->StateSaveArea.SsLimit;
+    pVmcbDest->StateSaveArea.CsSelector = pVmcbSrc->StateSaveArea.CsSelector;
+    pVmcbDest->StateSaveArea.DsSelector = pVmcbSrc->StateSaveArea.DsSelector;
+    pVmcbDest->StateSaveArea.EsSelector = pVmcbSrc->StateSaveArea.EsSelector;
+    pVmcbDest->StateSaveArea.SsSelector = pVmcbSrc->StateSaveArea.SsSelector;
+    pVmcbDest->StateSaveArea.CsAttrib = pVmcbSrc->StateSaveArea.CsAttrib;
+    pVmcbDest->StateSaveArea.DsAttrib = pVmcbSrc->StateSaveArea.DsAttrib;
+    pVmcbDest->StateSaveArea.EsAttrib = pVmcbSrc->StateSaveArea.EsAttrib;
+    pVmcbDest->StateSaveArea.SsAttrib = pVmcbSrc->StateSaveArea.SsAttrib;
 }
 
 NTSTATUS UtilForEachProcessor(NTSTATUS(*callback_routine)(void *), void *context) {
