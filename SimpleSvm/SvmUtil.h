@@ -43,6 +43,10 @@ BOOLEAN CheckVmcb12MsrBit(
     _Inout_ PVIRTUAL_PROCESSOR_DATA VpData,
     _Inout_ PGUEST_CONTEXT GuestContext);
 
+VOID  CopyVmcbBasic(PVMCB pVmcbDest, PVMCB pVmcbSrc);
+
+VOID CopyVmcbAdv(PVMCB pVmcbDest, PVMCB pVmcbSrc);
+
 NTSTATUS UtilForEachProcessor(NTSTATUS(*callback_routine)(void *), void *context);
 
 _IRQL_requires_max_(APC_LEVEL)

@@ -125,6 +125,59 @@ BOOLEAN CheckVmcb12MsrBit(
     return bret;
 }
 
+VOID  CopyVmcbBasic(PVMCB pVmcbDest, PVMCB pVmcbSrc)
+{
+    pVmcbDest->StateSaveArea.FsBase = pVmcbSrc->StateSaveArea.FsBase;
+    pVmcbDest->StateSaveArea.FsLimit = pVmcbSrc->StateSaveArea.FsLimit;
+    pVmcbDest->StateSaveArea.FsSelector = pVmcbSrc->StateSaveArea.FsSelector;
+    pVmcbDest->StateSaveArea.FsAttrib = pVmcbSrc->StateSaveArea.FsAttrib;
+
+
+    pVmcbDest->StateSaveArea.GsBase = pVmcbSrc->StateSaveArea.GsBase;
+    pVmcbDest->StateSaveArea.GsLimit = pVmcbSrc->StateSaveArea.GsLimit;
+    pVmcbDest->StateSaveArea.GsSelector = pVmcbSrc->StateSaveArea.GsSelector;
+    pVmcbDest->StateSaveArea.GsAttrib = pVmcbSrc->StateSaveArea.GsAttrib;
+
+    pVmcbDest->StateSaveArea.KernelGsBase = pVmcbSrc->StateSaveArea.KernelGsBase;
+
+
+    pVmcbDest->StateSaveArea.TrBase = pVmcbSrc->StateSaveArea.TrBase;
+    pVmcbDest->StateSaveArea.TrLimit = pVmcbSrc->StateSaveArea.TrLimit;
+    pVmcbDest->StateSaveArea.TrSelector = pVmcbSrc->StateSaveArea.TrSelector;
+    pVmcbDest->StateSaveArea.TrAttrib = pVmcbSrc->StateSaveArea.TrAttrib;
+
+    pVmcbDest->StateSaveArea.LdtrBase = pVmcbSrc->StateSaveArea.LdtrBase;
+    pVmcbDest->StateSaveArea.LdtrLimit = pVmcbSrc->StateSaveArea.LdtrLimit;
+    pVmcbDest->StateSaveArea.LdtrSelector = pVmcbSrc->StateSaveArea.LdtrSelector;
+    pVmcbDest->StateSaveArea.LdtrAttrib = pVmcbSrc->StateSaveArea.LdtrAttrib;
+
+    // star
+    pVmcbDest->StateSaveArea.Star = pVmcbSrc->StateSaveArea.Star;
+
+    // lstar
+    pVmcbDest->StateSaveArea.LStar = pVmcbSrc->StateSaveArea.LStar;
+
+    // cstar 
+    pVmcbDest->StateSaveArea.CStar = pVmcbSrc->StateSaveArea.CStar;
+
+    // sfmask
+    pVmcbDest->StateSaveArea.SfMask = pVmcbSrc->StateSaveArea.SfMask;
+
+    // sysentercs
+    pVmcbDest->StateSaveArea.SysenterCs = pVmcbSrc->StateSaveArea.SysenterCs;
+
+    // sysenteresp
+    pVmcbDest->StateSaveArea.SysenterEsp = pVmcbSrc->StateSaveArea.SysenterEsp;
+
+    // sysentereip
+    pVmcbDest->StateSaveArea.SysenterEip = pVmcbSrc->StateSaveArea.SysenterEip;
+}
+
+VOID CopyVmcbAdv(PVMCB pVmcbDest, PVMCB pVmcbSrc)
+{
+
+}
+
 NTSTATUS UtilForEachProcessor(NTSTATUS(*callback_routine)(void *), void *context) {
 	PAGED_CODE();
 
