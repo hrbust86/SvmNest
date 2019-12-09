@@ -195,6 +195,14 @@ VOID CopyVmcbAdv(PVMCB pVmcbDest, PVMCB pVmcbSrc)
     pVmcbDest->StateSaveArea.DsAttrib = pVmcbSrc->StateSaveArea.DsAttrib;
     pVmcbDest->StateSaveArea.EsAttrib = pVmcbSrc->StateSaveArea.EsAttrib;
     pVmcbDest->StateSaveArea.SsAttrib = pVmcbSrc->StateSaveArea.SsAttrib;
+
+    pVmcbDest->StateSaveArea.Dr7 = pVmcbSrc->StateSaveArea.Dr7;
+    pVmcbDest->StateSaveArea.Dr6 = pVmcbSrc->StateSaveArea.Dr6;
+
+    pVmcbDest->ControlArea.InterruptShadow = pVmcbSrc->ControlArea.InterruptShadow;
+
+    pVmcbDest->StateSaveArea.Cr2 = pVmcbSrc->StateSaveArea.Cr2;
+
 }
 
 NTSTATUS UtilForEachProcessor(NTSTATUS(*callback_routine)(void *), void *context) {
