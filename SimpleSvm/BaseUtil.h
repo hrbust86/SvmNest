@@ -9,7 +9,7 @@ VMX_MODE VmxGetVmxMode(_In_ VCPUVMX* vmx);
 
 VCPUVMX* VmmpGetVcpuVmx(PVIRTUAL_PROCESSOR_DATA pVpdata);
 
-void DumpVmcb(PVIRTUAL_PROCESSOR_DATA VpData);
+void DumpVmcbLeaveGuest(PVIRTUAL_PROCESSOR_DATA VpData);
 
 _IRQL_requires_same_
 VOID
