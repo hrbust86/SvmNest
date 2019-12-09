@@ -354,6 +354,9 @@ VOID SimulateReloadHostStateInToVmcbGuest02(_Inout_ PVIRTUAL_PROCESSOR_DATA VpDa
         CopyVmcbBasic(&(VmmpGetVcpuVmx(VpData)->VmcbL2Ring3), pVmcbGuest02va);
     }
 
+    CopyVmcbBasic(pVmcbGuest02va, &(VmmpGetVcpuVmx(VpData)->VmcbL1Ring0)); // load ring 0 
+    CopyVmcbAdv(pVmcbGuest02va, &(VmmpGetVcpuVmx(VpData)->VmcbL1Ring0));
+
     //GDTR.{base, limit} 
     //IDTR.{base, limit}
     pVmcbGuest02va->StateSaveArea.GdtrBase = pVmcbHostStateShadow->StateSaveArea.GdtrBase;
@@ -399,9 +402,6 @@ VOID SimulateReloadHostStateInToVmcbGuest02(_Inout_ PVIRTUAL_PROCESSOR_DATA VpDa
     // CPL = 0 
     pVmcbGuest02va->StateSaveArea.Cpl = 0;
 
-    // others
-    CopyVmcbBasic(pVmcbGuest02va, &(VmmpGetVcpuVmx(VpData)->VmcbL1Ring0)); // load ring 0 
-    CopyVmcbAdv(pVmcbGuest02va, &(VmmpGetVcpuVmx(VpData)->VmcbL1Ring0));
 }
 
 ///////////////////////////////////simulate vmrun
