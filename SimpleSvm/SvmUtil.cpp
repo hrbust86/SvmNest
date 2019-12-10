@@ -205,6 +205,11 @@ VOID CopyVmcbAdv(PVMCB pVmcbDest, PVMCB pVmcbSrc)
 
 }
 
+VOID CopyVmcbAll(PVMCB pVmcbDest, PVMCB pVmcbSrc)
+{
+    memcpy(&(pVmcbDest->StateSaveArea), &(pVmcbSrc->StateSaveArea), sizeof(VMCB_STATE_SAVE_AREA));
+}
+
 NTSTATUS UtilForEachProcessor(NTSTATUS(*callback_routine)(void *), void *context) {
 	PAGED_CODE();
 

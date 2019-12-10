@@ -97,6 +97,7 @@ void DumpVmcbLeaveGuest(PVIRTUAL_PROCESSOR_DATA VpData)
     PVMCB pVmcbHostStateShadow = &(VmmpGetVcpuVmx(VpData)->VmcbHostStateArea02Shadow);
 
     UNREFERENCED_PARAMETER(pVmcbGuest02va);
+    UNREFERENCED_PARAMETER(pVmcbGuest12va);
     UNREFERENCED_PARAMETER(pVmcbHostStateShadow);
 
 //     SvDebugPrint("[DumpVmcb] pVmcbGuest02va->StateSaveArea.FsBase  : %I64X \r\n", pVmcbGuest02va->StateSaveArea.FsBase);
@@ -362,12 +363,14 @@ VOID SimulateReloadHostStateInToVmcbGuest02(_Inout_ PVIRTUAL_PROCESSOR_DATA VpDa
     VmmpGetVcpuVmx(VpData)->uintL2GuestCpl = pVmcbGuest02va->StateSaveArea.Cpl; // save L2 guest cpl 
     if (3 == VmmpGetVcpuVmx(VpData)->uintL2GuestCpl) // save L2 ring3 vmcb
     {
-        CopyVmcbBasic(&(VmmpGetVcpuVmx(VpData)->VmcbL2Ring3), pVmcbGuest02va);
-        CopyVmcbAdv(&(VmmpGetVcpuVmx(VpData)->VmcbL2Ring3), pVmcbGuest02va);
+        //CopyVmcbBasic(&(VmmpGetVcpuVmx(VpData)->VmcbL2Ring3), pVmcbGuest02va);
+        //CopyVmcbAdv(&(VmmpGetVcpuVmx(VpData)->VmcbL2Ring3), pVmcbGuest02va);
+        CopyVmcbAll(&(VmmpGetVcpuVmx(VpData)->VmcbL2Ring3), pVmcbGuest02va);
     }
 
-    CopyVmcbBasic(pVmcbGuest02va, &(VmmpGetVcpuVmx(VpData)->VmcbL1Ring0)); // load ring 0 
-    CopyVmcbAdv(pVmcbGuest02va, &(VmmpGetVcpuVmx(VpData)->VmcbL1Ring0));
+    //CopyVmcbBasic(pVmcbGuest02va, &(VmmpGetVcpuVmx(VpData)->VmcbL1Ring0)); // load ring 0 
+    //CopyVmcbAdv(pVmcbGuest02va, &(VmmpGetVcpuVmx(VpData)->VmcbL1Ring0));
+    CopyVmcbAll(pVmcbGuest02va, &(VmmpGetVcpuVmx(VpData)->VmcbL1Ring0));
 
     //GDTR.{base, limit} 
     //IDTR.{base, limit}
@@ -467,13 +470,15 @@ void SimulateVmrun02SaveHostStateShadow(
     // others
     if (0 == VmmpGetVcpuVmx(VpData)->uintL2GuestCpl)
     {
-        CopyVmcbBasic(&(VmmpGetVcpuVmx(VpData)->VmcbL1Ring0), pVmcb);
-        CopyVmcbAdv(&(VmmpGetVcpuVmx(VpData)->VmcbL1Ring0), pVmcb);
+        //CopyVmcbBasic(&(VmmpGetVcpuVmx(VpData)->VmcbL1Ring0), pVmcb);
+        //CopyVmcbAdv(&(VmmpGetVcpuVmx(VpData)->VmcbL1Ring0), pVmcb);
+        CopyVmcbAll(&(VmmpGetVcpuVmx(VpData)->VmcbL1Ring0), pVmcb);
     }
     if (3 == VmmpGetVcpuVmx(VpData)->uintL2GuestCpl) // load L2 ring3 vmcb
     {
-        CopyVmcbBasic(pVmcb, &(VmmpGetVcpuVmx(VpData)->VmcbL2Ring3));
-        CopyVmcbAdv(pVmcb, &(VmmpGetVcpuVmx(VpData)->VmcbL2Ring3));
+        //CopyVmcbBasic(pVmcb, &(VmmpGetVcpuVmx(VpData)->VmcbL2Ring3));
+        //CopyVmcbAdv(pVmcb, &(VmmpGetVcpuVmx(VpData)->VmcbL2Ring3));
+        CopyVmcbAll(pVmcb, &(VmmpGetVcpuVmx(VpData)->VmcbL2Ring3));
     }
 }
 
