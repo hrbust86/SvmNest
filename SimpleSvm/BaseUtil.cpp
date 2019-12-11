@@ -168,6 +168,13 @@ void DumpVmcbLeaveGuest(PVIRTUAL_PROCESSOR_DATA VpData)
 
 }
 
+void DumpVmcbEnterGuest(PVIRTUAL_PROCESSOR_DATA VpData)
+{
+    PVMCB pVmcbGuest02va = GetCurrentVmcbGuest02(VpData);
+    SvDebugPrint("dump pVmcbGuest02va \r\n");
+    DumpVmcb(pVmcbGuest02va);
+}
+
 /*!
 @brief          Injects #GP with 0 of error code.
 

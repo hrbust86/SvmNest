@@ -13,6 +13,8 @@ void DumpVmcb(PVMCB pVmcb);
 
 void DumpVmcbLeaveGuest(PVIRTUAL_PROCESSOR_DATA VpData);
 
+void DumpVmcbEnterGuest(PVIRTUAL_PROCESSOR_DATA VpData);
+
 _IRQL_requires_same_
 VOID
 SvInjectGeneralProtectionException(
