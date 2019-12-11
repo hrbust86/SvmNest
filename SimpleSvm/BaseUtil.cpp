@@ -90,6 +90,69 @@ VCPUVMX* VmmpGetVcpuVmx(PVIRTUAL_PROCESSOR_DATA pVpdata)
     return pVpdata->HostStackLayout.pProcessNestData->vcpu_vmx;
 }
 
+void DumpVmcb(PVMCB pVmcb)
+{
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.EsSelector  : %I64X \r\n", pVmcb->StateSaveArea.EsSelector);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.EsAttrib  : %I64X \r\n", pVmcb->StateSaveArea.EsAttrib);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.EsLimit  : %I64X \r\n", pVmcb->StateSaveArea.EsLimit);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.EsBase  : %I64X \r\n", pVmcb->StateSaveArea.EsBase);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.CsSelector  : %I64X \r\n", pVmcb->StateSaveArea.CsSelector);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.CsAttrib  : %I64X \r\n", pVmcb->StateSaveArea.CsAttrib);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.CsLimit  : %I64X \r\n", pVmcb->StateSaveArea.CsLimit);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.CsBase  : %I64X \r\n", pVmcb->StateSaveArea.CsBase);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.SsSelector  : %I64X \r\n", pVmcb->StateSaveArea.SsSelector);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.SsAttrib  : %I64X \r\n", pVmcb->StateSaveArea.SsAttrib);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.SsLimit  : %I64X \r\n", pVmcb->StateSaveArea.SsLimit);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.SsBase  : %I64X \r\n", pVmcb->StateSaveArea.SsBase);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.DsSelector  : %I64X \r\n", pVmcb->StateSaveArea.DsSelector);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.DsAttrib  : %I64X \r\n", pVmcb->StateSaveArea.DsAttrib);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.DsLimit  : %I64X \r\n", pVmcb->StateSaveArea.DsLimit);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.DsBase  : %I64X \r\n", pVmcb->StateSaveArea.DsBase);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.FsSelector  : %I64X \r\n", pVmcb->StateSaveArea.FsSelector);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.FsAttrib  : %I64X \r\n", pVmcb->StateSaveArea.FsAttrib);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.FsLimit  : %I64X \r\n", pVmcb->StateSaveArea.FsLimit);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.FsBase  : %I64X \r\n", pVmcb->StateSaveArea.FsBase);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.GsSelector  : %I64X \r\n", pVmcb->StateSaveArea.GsSelector);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.GsAttrib  : %I64X \r\n", pVmcb->StateSaveArea.GsAttrib);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.GsLimit  : %I64X \r\n", pVmcb->StateSaveArea.GsLimit);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.GsBase  : %I64X \r\n", pVmcb->StateSaveArea.GsBase);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.GdtrSelector  : %I64X \r\n", pVmcb->StateSaveArea.GdtrSelector);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.GdtrAttrib  : %I64X \r\n", pVmcb->StateSaveArea.GdtrAttrib);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.GdtrLimit  : %I64X \r\n", pVmcb->StateSaveArea.GdtrLimit);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.GdtrBase  : %I64X \r\n", pVmcb->StateSaveArea.GdtrBase);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.LdtrSelector  : %I64X \r\n", pVmcb->StateSaveArea.LdtrSelector);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.LdtrAttrib  : %I64X \r\n", pVmcb->StateSaveArea.LdtrAttrib);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.LdtrLimit  : %I64X \r\n", pVmcb->StateSaveArea.LdtrLimit);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.LdtrBase  : %I64X \r\n", pVmcb->StateSaveArea.LdtrBase);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.IdtrSelector  : %I64X \r\n", pVmcb->StateSaveArea.IdtrSelector);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.IdtrAttrib  : %I64X \r\n", pVmcb->StateSaveArea.IdtrAttrib);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.IdtrLimit  : %I64X \r\n", pVmcb->StateSaveArea.IdtrLimit);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.IdtrBase  : %I64X \r\n", pVmcb->StateSaveArea.IdtrBase);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.TrSelector  : %I64X \r\n", pVmcb->StateSaveArea.TrSelector);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.TrAttrib  : %I64X \r\n", pVmcb->StateSaveArea.TrAttrib);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.TrLimit  : %I64X \r\n", pVmcb->StateSaveArea.TrLimit);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.TrBase  : %I64X \r\n", pVmcb->StateSaveArea.TrBase);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.Cpl  : %I64X \r\n", pVmcb->StateSaveArea.Cpl);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.Efer  : %I64X \r\n", pVmcb->StateSaveArea.Efer);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.Cr4  : %I64X \r\n", pVmcb->StateSaveArea.Cr4);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.Cr3  : %I64X \r\n", pVmcb->StateSaveArea.Cr3);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.Cr0  : %I64X \r\n", pVmcb->StateSaveArea.Cr0);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.Rflags  : %I64X \r\n", pVmcb->StateSaveArea.Rflags);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.Rip  : %I64X \r\n", pVmcb->StateSaveArea.Rip);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.Rsp  : %I64X \r\n", pVmcb->StateSaveArea.Rsp);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.Rax  : %I64X \r\n", pVmcb->StateSaveArea.Rax);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.Star  : %I64X \r\n", pVmcb->StateSaveArea.Star);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.LStar  : %I64X \r\n", pVmcb->StateSaveArea.LStar);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.CStar  : %I64X \r\n", pVmcb->StateSaveArea.CStar);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.SfMask  : %I64X \r\n", pVmcb->StateSaveArea.SfMask);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.KernelGsBase  : %I64X \r\n", pVmcb->StateSaveArea.KernelGsBase);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.SysenterCs  : %I64X \r\n", pVmcb->StateSaveArea.SysenterCs);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.SysenterEsp  : %I64X \r\n", pVmcb->StateSaveArea.SysenterEsp);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.SysenterEip  : %I64X \r\n", pVmcb->StateSaveArea.SysenterEip);
+    SvDebugPrint("[DumpVmcb] DumpVmcb->StateSaveArea.Cr2  : %I64X \r\n", pVmcb->StateSaveArea.Cr2);
+    //SvDebugPrint("[DumpVmcb] DumpVmcb->  : %I64X \r\n", );
+}
+
 void DumpVmcbLeaveGuest(PVIRTUAL_PROCESSOR_DATA VpData)
 {
     PVMCB pVmcbGuest12va = GetCurrentVmcbGuest12(VpData);
@@ -100,20 +163,9 @@ void DumpVmcbLeaveGuest(PVIRTUAL_PROCESSOR_DATA VpData)
     UNREFERENCED_PARAMETER(pVmcbGuest12va);
     UNREFERENCED_PARAMETER(pVmcbHostStateShadow);
 
-//     SvDebugPrint("[DumpVmcb] pVmcbGuest02va->StateSaveArea.FsBase  : %I64X \r\n", pVmcbGuest02va->StateSaveArea.FsBase);
-//     SvDebugPrint("[DumpVmcb] pVmcbGuest02va->StateSaveArea.FsLimit  : %I64X \r\n", pVmcbGuest02va->StateSaveArea.FsLimit);
-//     SvDebugPrint("[DumpVmcb] pVmcbGuest02va->StateSaveArea.FsSelector  : %I64X \r\n", pVmcbGuest02va->StateSaveArea.FsSelector);
-//     SvDebugPrint("[DumpVmcb] pVmcbGuest02va->StateSaveArea.FsAttrib  : %I64X \r\n", pVmcbGuest02va->StateSaveArea.FsAttrib);
-//     SvDebugPrint("[DumpVmcb] pVmcbGuest02va->  : %I64X \r\n", );
-//     SvDebugPrint("[DumpVmcb] pVmcbGuest02va->  : %I64X \r\n", );
-//     SvDebugPrint("[DumpVmcb] pVmcbGuest02va->  : %I64X \r\n", );
-//     SvDebugPrint("[DumpVmcb] pVmcbGuest02va->  : %I64X \r\n", );
-//     SvDebugPrint("[DumpVmcb] pVmcbGuest02va->  : %I64X \r\n", );
-//     SvDebugPrint("[DumpVmcb] pVmcbGuest02va->  : %I64X \r\n", );
-//     SvDebugPrint("[DumpVmcb] pVmcbGuest02va->  : %I64X \r\n", );
-//     SvDebugPrint("[DumpVmcb] pVmcbGuest02va->  : %I64X \r\n", );
-//     SvDebugPrint("[DumpVmcb] pVmcbGuest02va->  : %I64X \r\n", );
-//     SvDebugPrint("[DumpVmcb] pVmcbGuest02va->  : %I64X \r\n", );
+    SvDebugPrint("dump pVmcbGuest02va \r\n");
+    DumpVmcb(pVmcbGuest02va);
+
 }
 
 /*!
