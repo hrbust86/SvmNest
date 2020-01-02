@@ -579,6 +579,8 @@ void SimulateVmrun02LoadControlInfoToVmcbGuest02(
     //  ASID
     pVmcbGuest02va->ControlArea.GuestAsid = pVmcb->ControlArea.GuestAsid;
 
+    // flush tlb
+    pVmcbGuest02va->ControlArea.TlbControl = TLB_CONTROL_FLUSH_ASID;
 }
 
 void SimulateVmrun02LoadGuestStateFromVmcbGuest12(
